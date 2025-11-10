@@ -102,8 +102,8 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 - [x] T013 [P] [US0] Create database connection in src/orchestrator/db/connection.py
 - [x] T014 [P] [US0] Write test for database in tests/unit/db/test_connection.py
 - [x] T015 [US0] Implement async session factory with pooling
-- [ ] T016 [P] [US0] Setup Alembic in migrations/
-- [ ] T017 [US0] Create initial migration
+- [x] T016 [P] [US0] Setup Alembic in migrations/
+- [x] T017 [US0] Create initial migration
 
 ### Core Models
 
@@ -111,10 +111,10 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 - [x] T019 [P] [US0] Write test for Deployment model in tests/unit/models/test_deployment.py
 - [x] T020 [US0] Create Deployment model in src/orchestrator/models/deployment.py (id, name, status, template, parameters, cloud_region, created_at, updated_at)
 - [x] T021 [P] [US0] Create DeploymentStatus enum (PENDING, IN_PROGRESS, COMPLETED, FAILED, DELETING)
-- [ ] T022 [P] [US0] Write test for DeploymentRepository in tests/unit/repositories/test_deployment_repository.py
-- [ ] T023 [US0] Create DeploymentRepository with CRUD in src/orchestrator/db/repositories/deployment_repository.py
-- [ ] T024 [US0] Create migration for deployment table
-- [ ] T025 [P] [US0] Create Pydantic schemas in src/orchestrator/schemas/deployment.py
+- [x] T022 [P] [US0] Write test for DeploymentRepository in tests/unit/repositories/test_deployment_repository.py
+- [x] T023 [US0] Create DeploymentRepository with CRUD in src/orchestrator/db/repositories/deployment_repository.py
+- [x] T024 [US0] Create migration for deployment table
+- [x] T025 [P] [US0] Create Pydantic schemas in src/orchestrator/schemas/deployment.py
 
 ### API Foundation
 
