@@ -325,7 +325,7 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ---
 
-## Phase 6: Scaling (US4)
+## Phase 6: Scaling (US4) ✅ COMPLETE
 
 **Goal:** Scale VMs up/down
 
@@ -338,24 +338,24 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Scaling API
 
-- [ ] T114 [P] [US4] Create scaling schemas in src/orchestrator/schemas/scaling.py
-- [ ] T115 [P] [US4] Write test for scale endpoint in tests/unit/api/test_scaling.py
-- [ ] T116 [US4] Implement POST /deployments/{id}/scale endpoint in src/orchestrator/api/v1/scaling.py
+- [x] T114 [P] [US4] Create scaling schemas in src/orchestrator/schemas/scaling.py
+- [x] T115 [P] [US4] Write test for scale endpoint in tests/unit/api/test_scaling.py
+- [x] T116 [US4] Implement POST /deployments/{id}/scale endpoint in src/orchestrator/api/v1/scaling.py
 
 ### Scaling Workflow
 
-- [ ] T117 [P] [US4] Write test for ScaleWorkflow in tests/unit/workflows/test_scale.py
-- [ ] T118 [US4] Create ScaleWorkflow in src/orchestrator/workflows/scaling/scale.py
-- [ ] T119 [US4] Implement scale-out logic (create additional VMs)
-- [ ] T120 [US4] Implement scale-in logic (remove VMs, preserve minimum)
-- [ ] T121 [P] [US4] Create scale_out activity in src/orchestrator/workflows/scaling/activities.py
-- [ ] T122 [P] [US4] Create scale_in activity
+- [x] T117 [P] [US4] Write test for ScaleWorkflow in tests/unit/workflows/test_scale.py
+- [x] T118 [US4] Create ScaleWorkflow in src/orchestrator/workflows/scaling/scale.py
+- [x] T119 [US4] Implement scale-out logic (create additional VMs)
+- [x] T120 [US4] Implement scale-in logic (remove VMs, preserve minimum)
+- [x] T121 [P] [US4] Create scale_out activity in src/orchestrator/workflows/scaling/activities.py
+- [x] T122 [P] [US4] Create scale_in activity
 
 ### Integration Tests
 
-- [ ] T123 [US4] Write integration test in tests/integration/test_scaling_flow.py
-- [ ] T124 [US4] Test scale-out adds VMs
-- [ ] T125 [US4] Test scale-in removes VMs
+- [x] T123 [US4] Write integration test in tests/integration/test_scaling_flow.py
+- [x] T124 [US4] Test scale-out adds VMs
+- [x] T125 [US4] Test scale-in removes VMs
 
 **Acceptance:**
 - [x] POST /deployments/{id}/scale with count=3 creates 3 VMs
