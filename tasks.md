@@ -294,16 +294,16 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Ansible Integration
 
-- [ ] T101 [P] [US3] Create AnsibleClient in src/orchestrator/clients/ansible/client.py
-- [ ] T102 [P] [US3] Write test for Ansible client in tests/unit/clients/test_ansible.py
-- [ ] T103 [US3] Implement run_playbook method (via ansible-runner)
-- [ ] T104 [P] [US3] Implement get_playbook_status method
+- [x] T101 [P] [US3] Create AnsibleClient in src/orchestrator/clients/ansible/client.py
+- [x] T102 [P] [US3] Write test for Ansible client in tests/unit/clients/test_ansible.py
+- [x] T103 [US3] Implement run_playbook method (via ansible-runner)
+- [x] T104 [P] [US3] Implement get_playbook_status method
 
 ### Configuration API
 
-- [ ] T105 [P] [US3] Create configuration schemas in src/orchestrator/schemas/configuration.py
-- [ ] T106 [P] [US3] Write test for configure endpoint in tests/unit/api/test_configurations.py
-- [ ] T107 [US3] Implement POST /deployments/{id}/configure endpoint in src/orchestrator/api/v1/configurations.py
+- [x] T105 [P] [US3] Create configuration schemas in src/orchestrator/schemas/configuration.py
+- [x] T106 [P] [US3] Write test for configure endpoint in tests/unit/api/test_configurations.py
+- [x] T107 [US3] Implement POST /deployments/{id}/configure endpoint in src/orchestrator/api/v1/configurations.py
 
 ### Configuration Workflow
 
