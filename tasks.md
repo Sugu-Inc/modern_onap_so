@@ -184,14 +184,14 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Deployment API
 
-- [ ] T054 [P] [US1] Create deployment schemas in src/orchestrator/schemas/deployment.py (CreateDeploymentRequest, DeploymentResponse)
-- [ ] T055 [P] [US1] Write test for create deployment in tests/unit/api/test_deployments.py
-- [ ] T056 [US1] Create deployments router in src/orchestrator/api/v1/deployments.py
-- [ ] T057 [US1] Implement POST /deployments endpoint
-- [ ] T058 [P] [US1] Write test for get deployment in tests/unit/api/test_deployments.py
-- [ ] T059 [US1] Implement GET /deployments/{id} endpoint
-- [ ] T060 [P] [US1] Write test for list deployments in tests/unit/api/test_deployments.py
-- [ ] T061 [US1] Implement GET /deployments endpoint
+- [x] T054 [P] [US1] Create deployment schemas in src/orchestrator/schemas/deployment.py (already done in Phase 2)
+- [x] T055 [P] [US1] Write test for create deployment in tests/unit/api/test_deployments.py
+- [x] T056 [US1] Create deployments router in src/orchestrator/api/v1/deployments.py
+- [x] T057 [US1] Implement POST /deployments endpoint
+- [x] T058 [P] [US1] Write test for get deployment in tests/unit/api/test_deployments.py
+- [x] T059 [US1] Implement GET /deployments/{id} endpoint
+- [x] T060 [P] [US1] Write test for list deployments in tests/unit/api/test_deployments.py
+- [x] T061 [US1] Implement GET /deployments endpoint (with filters and pagination)
 
 ### Deployment Service
 
