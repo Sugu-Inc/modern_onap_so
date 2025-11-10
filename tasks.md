@@ -254,14 +254,14 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Update Deployment
 
-- [ ] T088 [P] [US2] Create update schemas in src/orchestrator/schemas/deployment.py
-- [ ] T089 [P] [US2] Write test for update deployment in tests/unit/api/test_deployments.py
-- [ ] T090 [US2] Implement PATCH /deployments/{id} endpoint
-- [ ] T091 [P] [US2] Write test for UpdateWorkflow in tests/unit/workflows/test_update.py
-- [ ] T092 [US2] Create UpdateWorkflow in src/orchestrator/workflows/deployment/update.py
-- [ ] T093 [US2] Implement update orchestration (resize VM, modify network)
-- [ ] T094 [P] [US2] Create resize_vm activity
-- [ ] T095 [P] [US2] Create update_network activity
+- [x] T088 [P] [US2] Create update schemas in src/orchestrator/schemas/deployment.py
+- [x] T089 [P] [US2] Write test for update deployment in tests/unit/api/test_deployments.py
+- [x] T090 [US2] Implement PATCH /deployments/{id} endpoint
+- [x] T091 [P] [US2] Write test for UpdateWorkflow in tests/unit/workflows/test_update.py
+- [x] T092 [US2] Create UpdateWorkflow in src/orchestrator/workflows/deployment/update.py
+- [x] T093 [US2] Implement update orchestration (resize VM, modify network)
+- [x] T094 [P] [US2] Create resize_vm activity
+- [x] T095 [P] [US2] Create update_network activity
 
 ### Integration Tests
 
