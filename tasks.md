@@ -118,12 +118,12 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### API Foundation
 
-- [ ] T026 [P] [US0] Create FastAPI app in src/orchestrator/main.py
-- [ ] T027 [P] [US0] Write test for health endpoint in tests/unit/api/test_health.py
-- [ ] T028 [US0] Implement GET /health endpoint in src/orchestrator/api/health.py
-- [ ] T029 [P] [US0] Create error handlers in src/orchestrator/api/middleware/errors.py
+- [x] T026 [P] [US0] Create FastAPI app in src/orchestrator/main.py
+- [x] T027 [P] [US0] Write test for health endpoint in tests/unit/api/test_health.py
+- [x] T028 [US0] Implement GET /health endpoint in src/orchestrator/api/health.py
+- [x] T029 [P] [US0] Create error handlers in src/orchestrator/api/middleware/errors.py
 - [ ] T030 [P] [US0] Create logging middleware in src/orchestrator/api/middleware/logging.py
-- [ ] T031 [US0] Add middleware to app
+- [x] T031 [US0] Add middleware to app (error handlers added)
 
 ### Workflow Engine
 
