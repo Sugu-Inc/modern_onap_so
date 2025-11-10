@@ -164,10 +164,10 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Deployment Templates
 
-- [ ] T040 [P] [US1] Create DeploymentTemplate model in src/orchestrator/models/template.py (name, description, vm_config, network_config)
-- [ ] T041 [P] [US1] Write test for template validation in tests/unit/models/test_template.py
-- [ ] T042 [US1] Implement template validation logic
-- [ ] T043 [US1] Create migration for template table
+- [x] T040 [P] [US1] Create DeploymentTemplate model in src/orchestrator/models/template.py (name, description, vm_config, network_config)
+- [x] T041 [P] [US1] Write test for template validation in tests/unit/models/test_template.py
+- [x] T042 [US1] Implement template validation logic
+- [x] T043 [US1] Create migration for template table
 
 ### OpenStack Client
 
