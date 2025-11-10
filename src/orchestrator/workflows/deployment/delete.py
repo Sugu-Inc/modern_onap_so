@@ -178,7 +178,7 @@ class DeleteWorkflow:
 
 
 async def run_delete_workflow(
-    deployment_id,
+    deployment_id: object,
     cloud_region: str,
     resources: dict,
     openstack_config: dict | None = None,

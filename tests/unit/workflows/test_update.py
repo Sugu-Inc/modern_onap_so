@@ -1,6 +1,5 @@
 """Tests for UpdateWorkflow."""
 
-from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 

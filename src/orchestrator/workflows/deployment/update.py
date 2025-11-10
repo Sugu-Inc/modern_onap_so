@@ -183,7 +183,7 @@ class UpdateWorkflow:
 
 
 async def run_update_workflow(
-    deployment_id,
+    deployment_id: object,
     cloud_region: str,
     current_resources: dict,
     updated_parameters: dict,

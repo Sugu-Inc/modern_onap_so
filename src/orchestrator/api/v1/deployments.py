@@ -208,11 +208,9 @@ async def update_deployment(
     # Trigger async workflow to update infrastructure
     # This is non-blocking - the workflow will update the deployment status
     if request.parameters:
-        from orchestrator.workflows.deployment.update import run_update_workflow
-
         import asyncio
 
-        from orchestrator.config import settings
+        from orchestrator.workflows.deployment.update import run_update_workflow
 
         # Extract OpenStack config from settings (simplified for now)
         openstack_config = {
@@ -273,12 +271,10 @@ async def delete_deployment(
 
     # Trigger async workflow to deprovision infrastructure
     # This is non-blocking - the workflow will update the deployment status
-    from orchestrator.workflows.deployment.delete import run_delete_workflow
-
     # Import asyncio to run workflow in background
     import asyncio
 
-    from orchestrator.config import settings
+    from orchestrator.workflows.deployment.delete import run_delete_workflow
 
     # Extract OpenStack config from settings (simplified for now)
     openstack_config = {

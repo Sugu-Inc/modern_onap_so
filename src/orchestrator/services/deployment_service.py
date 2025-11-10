@@ -4,6 +4,7 @@ DeploymentService for managing deployment lifecycle.
 This service layer coordinates between the API, repository, and workflows.
 """
 
+from typing import Any
 from uuid import UUID
 
 from orchestrator.db.repositories.deployment_repository import DeploymentRepository
@@ -23,7 +24,7 @@ class DeploymentService:
     """
 
     def __init__(
-        self, repository: DeploymentRepository, workflow_client=None
+        self, repository: DeploymentRepository, workflow_client: object | None = None
     ) -> None:
         """
         Initialize deployment service.
@@ -76,7 +77,7 @@ class DeploymentService:
         # Trigger async workflow (non-blocking)
         if self.workflow_client:
             try:
-                await self.workflow_client.start_deployment_workflow(
+                await self.workflow_client.start_deployment_workflow(  # type: ignore[attr-defined]
                     created_deployment.id
                 )
                 logger.info(
@@ -145,7 +146,7 @@ class DeploymentService:
         return deployment_responses, total
 
     async def update_deployment(
-        self, deployment_id: UUID, **kwargs
+        self, deployment_id: UUID, **kwargs: Any
     ) -> DeploymentResponse | None:
         """
         Update deployment.

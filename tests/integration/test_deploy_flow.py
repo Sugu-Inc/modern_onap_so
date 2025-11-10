@@ -499,7 +499,7 @@ class TestDeploymentFlowEndToEnd:
 
         # Verify all created successfully
         assert len(results) == 3
-        assert len(set(r.id for r in results)) == 3  # All unique IDs
+        assert len({r.id for r in results}) == 3  # All unique IDs
 
         # Verify in database
         deployments = await repository.list()

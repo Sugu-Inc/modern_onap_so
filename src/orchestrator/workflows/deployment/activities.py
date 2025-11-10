@@ -172,7 +172,7 @@ async def poll_vm_status_activity(
         ip_address = None
         if status_result.addresses:
             # Try to get the first IP from any network
-            for network_name, addresses in status_result.addresses.items():
+            for _network_name, addresses in status_result.addresses.items():
                 if addresses and len(addresses) > 0:
                     ip_address = addresses[0].get("addr")
                     break
@@ -506,7 +506,7 @@ async def resize_vm_activity(
         new_flavor=new_flavor,
     )
 
-    async with OpenStackClient(**openstack_config) as client:
+    async with OpenStackClient(**openstack_config) as _client:
         try:
             # Note: In a real OpenStack implementation, resize involves:
             # 1. Stop the instance
@@ -518,8 +518,8 @@ async def resize_vm_activity(
 
             # Placeholder for actual resize logic
             # In production, this would call OpenStack Nova API:
-            # await client.resize_server(server_id, new_flavor)
-            # await client.confirm_resize(server_id)
+            # await _client.resize_server(server_id, new_flavor)
+            # await _client.confirm_resize(server_id)
 
             logger.info(
                 "activity_resize_vm_completed",
@@ -573,7 +573,7 @@ async def update_network_activity(
         new_cidr=new_cidr,
     )
 
-    async with OpenStackClient(**openstack_config) as client:
+    async with OpenStackClient(**openstack_config) as _client:
         try:
             # Note: In OpenStack, changing a subnet CIDR requires:
             # 1. Create a new subnet with the new CIDR
@@ -584,16 +584,15 @@ async def update_network_activity(
             # For now, we'll create a new subnet
             # TODO: Implement actual network migration logic
 
-            new_subnet_config = SubnetConfig(
-                name=f"updated-subnet-{deployment_id}",
-                network_id=network_id,
-                cidr=new_cidr,
-                ip_version=4,
-                enable_dhcp=True,
-            )
-
-            # Placeholder - in production would create new subnet
-            # new_subnet = await client.create_subnet(new_subnet_config)
+            # Placeholder - in production would create new subnet with _client
+            # _new_subnet_config = SubnetConfig(
+            #     name=f"updated-subnet-{deployment_id}",
+            #     network_id=network_id,
+            #     cidr=new_cidr,
+            #     ip_version=4,
+            #     enable_dhcp=True,
+            # )
+            # new_subnet = await _client.create_subnet(_new_subnet_config)
             new_subnet_id = f"new-subnet-{subnet_id}"
 
             logger.info(
