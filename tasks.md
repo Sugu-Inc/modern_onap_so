@@ -195,11 +195,11 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Deployment Service
 
-- [ ] T062 [P] [US1] Write test for DeploymentService in tests/unit/services/test_deployment_service.py
-- [ ] T063 [US1] Create DeploymentService in src/orchestrator/services/deployment_service.py
-- [ ] T064 [US1] Implement create_deployment method (validate template, create DB record, trigger workflow)
-- [ ] T065 [US1] Implement get_deployment method
-- [ ] T066 [US1] Implement list_deployments method
+- [x] T062 [P] [US1] Write test for DeploymentService in tests/unit/services/test_deployment_service.py
+- [x] T063 [US1] Create DeploymentService in src/orchestrator/services/deployment_service.py
+- [x] T064 [US1] Implement create_deployment method (validate template, create DB record, trigger workflow)
+- [x] T065 [US1] Implement get_deployment method
+- [x] T066 [US1] Implement list_deployments method (with update and delete methods)
 
 ### Deployment Workflow
 
