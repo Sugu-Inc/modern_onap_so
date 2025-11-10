@@ -243,14 +243,14 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Delete Deployment
 
-- [ ] T080 [P] [US2] Write test for delete deployment in tests/unit/api/test_deployments.py
-- [ ] T081 [US2] Implement DELETE /deployments/{id} endpoint
-- [ ] T082 [P] [US2] Write test for DeleteWorkflow in tests/unit/workflows/test_delete.py
-- [ ] T083 [US2] Create DeleteWorkflow in src/orchestrator/workflows/deployment/delete.py
-- [ ] T084 [US2] Implement deletion orchestration (delete VM → delete network → update DB)
-- [ ] T085 [P] [US2] Create delete_vm activity
-- [ ] T086 [P] [US2] Create delete_network activity
-- [ ] T087 [P] [US2] Create cleanup_resources activity (orphaned resources)
+- [x] T080 [P] [US2] Write test for delete deployment in tests/unit/api/test_deployments.py
+- [x] T081 [US2] Implement DELETE /deployments/{id} endpoint
+- [x] T082 [P] [US2] Write test for DeleteWorkflow in tests/unit/workflows/test_delete.py
+- [x] T083 [US2] Create DeleteWorkflow in src/orchestrator/workflows/deployment/delete.py
+- [x] T084 [US2] Implement deletion orchestration (delete VM → delete network → update DB)
+- [x] T085 [P] [US2] Create delete_vm activity
+- [x] T086 [P] [US2] Create delete_network activity
+- [x] T087 [P] [US2] Create cleanup_resources activity (orphaned resources)
 
 ### Update Deployment
 
