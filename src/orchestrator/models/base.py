@@ -7,8 +7,42 @@ Provides common fields and functionality for all database models.
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, String
+from sqlalchemy import DateTime, String, TypeDecorator
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+class GUID(TypeDecorator):
+    """Platform-independent GUID type.
+
+    Uses PostgreSQL's UUID type, otherwise uses String(36).
+    """
+
+    impl = String
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql":
+            return dialect.type_descriptor(PostgresUUID(as_uuid=True))
+        else:
+            return dialect.type_descriptor(String(36))
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        elif dialect.name == "postgresql":
+            return str(value)
+        else:
+            if isinstance(value, UUID):
+                return str(value)
+            return value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        if not isinstance(value, UUID):
+            return UUID(value)
+        return value
 
 
 class Base(DeclarativeBase):
@@ -30,7 +64,7 @@ class BaseModel(Base):
     __abstract__ = True
 
     id: Mapped[UUID] = mapped_column(
-        String(36),
+        GUID(),
         primary_key=True,
         default=uuid4,
         nullable=False,
