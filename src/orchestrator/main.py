@@ -10,8 +10,10 @@ from typing import AsyncIterator
 from fastapi import FastAPI
 
 from orchestrator.api.middleware.errors import add_error_handlers
+from orchestrator.api.middleware.logging import add_logging_middleware
 from orchestrator.api.v1 import health
 from orchestrator.config import settings
+from orchestrator.logging import logger
 
 
 @asynccontextmanager
@@ -22,10 +24,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Handles startup and shutdown tasks.
     """
     # Startup
+    logger.info("application_starting", version="1.0.0")
     # TODO: Initialize database connection pool
     # TODO: Initialize Temporal client
     yield
     # Shutdown
+    logger.info("application_shutting_down")
     # TODO: Close database connections
     # TODO: Close Temporal client
 
@@ -41,7 +45,8 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# Add error handlers
+# Add middleware (order matters: logging first, then errors)
+add_logging_middleware(app)
 add_error_handlers(app)
 
 # Include routers
