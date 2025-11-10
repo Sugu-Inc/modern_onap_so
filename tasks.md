@@ -307,10 +307,10 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Configuration Workflow
 
-- [ ] T108 [P] [US3] Write test for ConfigureWorkflow in tests/unit/workflows/test_configure.py
-- [ ] T109 [US3] Create ConfigureWorkflow in src/orchestrator/workflows/configuration/configure.py
-- [ ] T110 [US3] Implement configuration orchestration (get VM IP → run Ansible playbook → update status)
-- [ ] T111 [P] [US3] Create run_ansible activity in src/orchestrator/workflows/configuration/activities.py
+- [x] T108 [P] [US3] Write test for ConfigureWorkflow in tests/unit/workflows/test_configure.py
+- [x] T109 [US3] Create ConfigureWorkflow in src/orchestrator/workflows/configuration/configure.py
+- [x] T110 [US3] Implement configuration orchestration (get VM IP → run Ansible playbook → update status)
+- [x] T111 [P] [US3] Create run_ansible activity in src/orchestrator/workflows/configuration/activities.py
 
 ### Integration Tests
 
