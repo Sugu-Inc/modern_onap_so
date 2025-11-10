@@ -314,8 +314,8 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Integration Tests
 
-- [ ] T112 [US3] Write integration test in tests/integration/test_configure_flow.py
-- [ ] T113 [US3] Test Ansible playbook execution with mock VM
+- [x] T112 [US3] Write integration test in tests/integration/test_configure_flow.py
+- [x] T113 [US3] Test Ansible playbook execution with mock VM
 
 **Acceptance:**
 - [x] POST /deployments/{id}/configure triggers Ansible

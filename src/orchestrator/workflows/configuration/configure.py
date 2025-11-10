@@ -84,14 +84,10 @@ class ConfigureWorkflow:
             success = ansible_result["status"] == PlaybookStatus.SUCCESSFUL
 
             if success:
-                # Update deployment status to COMPLETED with configuration metadata
+                # Update deployment status to COMPLETED
                 await update_deployment_status_activity(
                     deployment_id=workflow_input.deployment_id,
                     status=DeploymentStatus.COMPLETED,
-                    extra_metadata={
-                        "last_configured_at": str(ansible_result["execution_id"]),
-                        "configured_hosts": list(vm_addresses.values()),
-                    },
                 )
 
                 return ConfigureWorkflowResult(
