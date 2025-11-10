@@ -4,6 +4,7 @@ Configuration workflow.
 Orchestrates Ansible playbook execution on deployed VMs.
 """
 
+from contextlib import suppress
 from uuid import UUID
 
 from orchestrator.clients.ansible.client import PlaybookStatus
@@ -127,15 +128,13 @@ class ConfigureWorkflow:
             error_message = f"Configuration workflow failed: {e!s}"
 
             # Try to update deployment status
-            try:
+            # If status update fails, don't fail the workflow result
+            with suppress(Exception):
                 await update_deployment_status_activity(
                     deployment_id=workflow_input.deployment_id,
                     status=DeploymentStatus.FAILED,
                     error={"message": error_message},
                 )
-            except Exception:
-                # If status update fails, log but don't fail the workflow result
-                pass
 
             return ConfigureWorkflowResult(
                 success=False,

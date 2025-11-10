@@ -16,7 +16,6 @@ from orchestrator.db.repositories.deployment_repository import DeploymentReposit
 from orchestrator.models.base import Base
 from orchestrator.models.deployment import Deployment, DeploymentStatus
 from orchestrator.workflows.configuration.configure import run_configure_workflow
-from orchestrator.workflows.configuration.models import ConfigureWorkflowInput
 
 pytestmark = pytest.mark.integration
 

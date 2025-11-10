@@ -6,7 +6,6 @@ These activities are designed to be idempotent and retriable.
 
 from pathlib import Path
 from typing import Any
-from uuid import UUID
 
 from orchestrator.clients.ansible.client import AnsibleClient, PlaybookResult
 
