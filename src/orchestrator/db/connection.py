@@ -53,16 +53,28 @@ class DatabaseConnection:
 
     def _create_engine(self) -> AsyncEngine:
         """Create async SQLAlchemy engine."""
-        # Use NullPool for testing to avoid connection pool issues
-        pool_class: type[Pool] | None = None if settings.debug else None
+        # Determine if we're using SQLite (which doesn't support pool parameters)
+        is_sqlite = "sqlite" in self.database_url.lower()
+
+        # Base engine kwargs
+        engine_kwargs = {
+            "echo": settings.debug,
+        }
+
+        # Only add pool parameters for non-SQLite databases
+        if not is_sqlite:
+            engine_kwargs.update({
+                "pool_pre_ping": True,
+                "pool_size": self.pool_size,
+                "max_overflow": self.max_overflow,
+            })
+            # Use NullPool for testing to avoid connection pool issues
+            if settings.debug:
+                engine_kwargs["poolclass"] = NullPool
 
         engine = create_async_engine(
             self.database_url,
-            echo=settings.debug,
-            pool_pre_ping=True,
-            pool_size=self.pool_size,
-            max_overflow=self.max_overflow,
-            poolclass=pool_class,
+            **engine_kwargs,
         )
         return engine
 

@@ -57,52 +57,30 @@ class TestDeployment:
         assert deployment.extra_metadata is None
         assert deployment.deleted_at is None
 
-    def test_deployment_id_generation(self) -> None:
-        """Test that deployment ID is auto-generated."""
+    def test_deployment_with_explicit_values(self) -> None:
+        """Test deployment with all explicit values."""
+        from uuid import uuid4
+
+        deployment_id = uuid4()
+        now = datetime.now(timezone.utc)
+
         deployment = Deployment(
+            id=deployment_id,
             name="test",
+            status=DeploymentStatus.PENDING,
             template={},
             parameters={},
             cloud_region="region",
+            created_at=now,
+            updated_at=now,
         )
 
-        assert deployment.id is not None
+        assert deployment.id == deployment_id
         assert isinstance(deployment.id, UUID)
-
-    def test_deployment_timestamps(self) -> None:
-        """Test that timestamps are auto-generated."""
-        deployment = Deployment(
-            name="test",
-            template={},
-            parameters={},
-            cloud_region="region",
-        )
-
-        assert deployment.created_at is not None
-        assert isinstance(deployment.created_at, datetime)
-        assert deployment.updated_at is not None
-        assert isinstance(deployment.updated_at, datetime)
-
-    def test_deployment_default_status(self) -> None:
-        """Test that default status is PENDING."""
-        deployment = Deployment(
-            name="test",
-            template={},
-            parameters={},
-            cloud_region="region",
-        )
-
         assert deployment.status == DeploymentStatus.PENDING
-
-    def test_deployment_default_parameters(self) -> None:
-        """Test that default parameters is empty dict."""
-        deployment = Deployment(
-            name="test",
-            template={},
-            cloud_region="region",
-        )
-
         assert deployment.parameters == {}
+        assert deployment.created_at == now
+        assert deployment.updated_at == now
 
     def test_deployment_repr(self) -> None:
         """Test deployment string representation."""

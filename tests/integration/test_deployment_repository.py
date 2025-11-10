@@ -1,4 +1,8 @@
-"""Tests for DeploymentRepository."""
+"""Integration tests for DeploymentRepository.
+
+These tests require a database and are marked as integration tests.
+Run with: pytest -m integration
+"""
 
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -10,6 +14,8 @@ from sqlalchemy.orm import sessionmaker
 from orchestrator.db.repositories.deployment_repository import DeploymentRepository
 from orchestrator.models.base import Base
 from orchestrator.models.deployment import Deployment, DeploymentStatus
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

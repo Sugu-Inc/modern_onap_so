@@ -114,16 +114,13 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
-    "--cov=src/orchestrator",
-    "--cov-report=html",
-    "--cov-report=term-missing",
-    "--cov-fail-under=90",
 ]
 markers = [
-    "unit: Unit tests",
-    "integration: Integration tests",
+    "unit: Unit tests (fast, no external dependencies)",
+    "integration: Integration tests (require database)",
     "slow: Slow running tests",
 ]
+# Note: Coverage enforcement is done in CI, not in local dev
 
 [tool.coverage.run]
 source = ["src"]
