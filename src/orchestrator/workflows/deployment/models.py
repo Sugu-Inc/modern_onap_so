@@ -67,3 +67,20 @@ class RollbackInput(BaseModel):
         default_factory=list, description="Server IDs to delete"
     )
     reason: str = Field(..., description="Reason for rollback")
+
+
+class DeleteWorkflowInput(BaseModel):
+    """Input for delete deployment workflow."""
+
+    deployment_id: UUID = Field(..., description="Deployment ID to delete")
+    cloud_region: str = Field(..., description="Cloud region")
+    resources: dict = Field(default_factory=dict, description="Resources to delete")
+
+
+class DeleteWorkflowResult(BaseModel):
+    """Result of delete deployment workflow."""
+
+    deployment_id: UUID = Field(..., description="Deployment ID")
+    success: bool = Field(..., description="Whether deletion succeeded")
+    error: str | None = Field(None, description="Error message if failed")
+

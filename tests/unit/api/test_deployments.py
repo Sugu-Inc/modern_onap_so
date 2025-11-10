@@ -283,19 +283,24 @@ class TestDeleteDeployment:
         self, client: TestClient, mock_deployment_repository: AsyncMock
     ) -> None:
         """Test successful deployment deletion."""
+        from tests.unit.api.test_deployments import create_mock_deployment
+
         deployment_id = uuid4()
-        mock_deployment_repository.delete.return_value = True
+        mock_deployment = create_mock_deployment(
+            id=deployment_id, resources={"network_id": "net-123", "server_ids": ["vm-1"]}
+        )
+        mock_deployment_repository.get_by_id.return_value = mock_deployment
 
         response = client.delete(f"/v1/deployments/{deployment_id}")
 
-        assert response.status_code == 204
+        assert response.status_code == 202
 
     def test_delete_deployment_not_found(
         self, client: TestClient, mock_deployment_repository: AsyncMock
     ) -> None:
         """Test deleting non-existent deployment."""
         deployment_id = uuid4()
-        mock_deployment_repository.delete.return_value = False
+        mock_deployment_repository.get_by_id.return_value = None
 
         response = client.delete(f"/v1/deployments/{deployment_id}")
 

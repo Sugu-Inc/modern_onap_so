@@ -204,16 +204,21 @@ async def update_deployment(
 
 @router.delete(
     "/{deployment_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_202_ACCEPTED,
     summary="Delete deployment",
-    description="Soft delete a deployment (marks as deleted)",
+    description="Delete a deployment and deprovision all infrastructure resources",
 )
 async def delete_deployment(
     deployment_id: UUID,
     repo: Annotated[DeploymentRepository, Depends(get_deployment_repository)],
 ) -> None:
     """
-    Delete deployment (soft delete).
+    Delete deployment and deprovision infrastructure.
+
+    This triggers an async workflow to:
+    1. Delete all VMs
+    2. Delete network
+    3. Mark deployment as DELETED
 
     Args:
         deployment_id: Deployment unique identifier
@@ -222,13 +227,39 @@ async def delete_deployment(
     Raises:
         HTTPException: If deployment not found
     """
-    # TODO: Trigger async workflow to deprovision infrastructure
-    # await workflow_client.start_delete_workflow(deployment_id)
+    # Get deployment to verify it exists and get resources
+    deployment = await repo.get_by_id(deployment_id)
 
-    success = await repo.delete(deployment_id)
-
-    if not success:
+    if not deployment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Deployment {deployment_id} not found",
         )
+
+    # Trigger async workflow to deprovision infrastructure
+    # This is non-blocking - the workflow will update the deployment status
+    from orchestrator.workflows.deployment.delete import run_delete_workflow
+
+    # Import asyncio to run workflow in background
+    import asyncio
+
+    from orchestrator.config import settings
+
+    # Extract OpenStack config from settings (simplified for now)
+    openstack_config = {
+        "auth_url": "http://localhost:5000/v3",  # TODO: Load from settings
+        "username": "admin",
+        "password": "secret",
+        "project_name": "admin",
+        "region_name": deployment.cloud_region,
+    }
+
+    # Start workflow in background (fire and forget)
+    asyncio.create_task(
+        run_delete_workflow(
+            deployment_id=deployment_id,
+            cloud_region=deployment.cloud_region,
+            resources=deployment.resources or {},
+            openstack_config=openstack_config,
+        )
+    )

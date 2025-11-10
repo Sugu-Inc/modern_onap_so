@@ -302,3 +302,177 @@ async def rollback_resources_activity(
                 )
 
     logger.info("activity_rollback_completed", deployment_id=str(deployment_id))
+
+
+async def delete_vm_activity(
+    deployment_id: UUID,
+    server_id: str,
+    openstack_config: dict,
+) -> bool:
+    """
+    Delete a VM/server from OpenStack.
+
+    Args:
+        deployment_id: Deployment ID for logging
+        server_id: Server ID to delete
+        openstack_config: OpenStack client configuration
+
+    Returns:
+        True if deletion succeeded
+
+    Raises:
+        Exception: If deletion fails
+    """
+    logger.info(
+        "activity_delete_vm_started",
+        deployment_id=str(deployment_id),
+        server_id=server_id,
+    )
+
+    async with OpenStackClient(**openstack_config) as client:
+        try:
+            success = await client.delete_server(server_id)
+
+            if success:
+                logger.info(
+                    "activity_delete_vm_completed",
+                    deployment_id=str(deployment_id),
+                    server_id=server_id,
+                )
+                return True
+            else:
+                msg = f"Failed to delete server {server_id}"
+                logger.error(
+                    "activity_delete_vm_failed",
+                    deployment_id=str(deployment_id),
+                    server_id=server_id,
+                    error=msg,
+                )
+                raise Exception(msg)
+
+        except Exception as e:
+            logger.error(
+                "activity_delete_vm_error",
+                deployment_id=str(deployment_id),
+                server_id=server_id,
+                error=str(e),
+            )
+            raise
+
+
+async def delete_network_activity(
+    deployment_id: UUID,
+    network_id: str,
+    openstack_config: dict,
+) -> bool:
+    """
+    Delete a network from OpenStack.
+
+    Args:
+        deployment_id: Deployment ID for logging
+        network_id: Network ID to delete
+        openstack_config: OpenStack client configuration
+
+    Returns:
+        True if deletion succeeded
+
+    Raises:
+        Exception: If deletion fails
+    """
+    logger.info(
+        "activity_delete_network_started",
+        deployment_id=str(deployment_id),
+        network_id=network_id,
+    )
+
+    async with OpenStackClient(**openstack_config) as client:
+        try:
+            success = await client.delete_network(network_id)
+
+            if success:
+                logger.info(
+                    "activity_delete_network_completed",
+                    deployment_id=str(deployment_id),
+                    network_id=network_id,
+                )
+                return True
+            else:
+                msg = f"Failed to delete network {network_id}"
+                logger.error(
+                    "activity_delete_network_failed",
+                    deployment_id=str(deployment_id),
+                    network_id=network_id,
+                    error=msg,
+                )
+                raise Exception(msg)
+
+        except Exception as e:
+            logger.error(
+                "activity_delete_network_error",
+                deployment_id=str(deployment_id),
+                network_id=network_id,
+                error=str(e),
+            )
+            raise
+
+
+async def cleanup_orphaned_resources_activity(
+    deployment_id: UUID,
+    resources: dict,
+    openstack_config: dict,
+) -> None:
+    """
+    Best-effort cleanup of potentially orphaned resources.
+
+    This activity attempts to clean up any resources that may have been left behind
+    during a failed deletion. It logs errors but doesn't fail if cleanup fails.
+
+    Args:
+        deployment_id: Deployment ID for logging
+        resources: Dictionary of resources to clean up
+        openstack_config: OpenStack client configuration
+    """
+    logger.info(
+        "activity_cleanup_orphaned_started",
+        deployment_id=str(deployment_id),
+        resources=resources,
+    )
+
+    async with OpenStackClient(**openstack_config) as client:
+        # Try to delete any remaining servers
+        server_ids = resources.get("server_ids", [])
+        for server_id in server_ids:
+            try:
+                await client.delete_server(server_id)
+                logger.info(
+                    "orphaned_server_cleaned",
+                    deployment_id=str(deployment_id),
+                    server_id=server_id,
+                )
+            except Exception as e:
+                logger.warning(
+                    "orphaned_server_cleanup_failed",
+                    deployment_id=str(deployment_id),
+                    server_id=server_id,
+                    error=str(e),
+                )
+
+        # Try to delete network
+        network_id = resources.get("network_id")
+        if network_id:
+            try:
+                await client.delete_network(network_id)
+                logger.info(
+                    "orphaned_network_cleaned",
+                    deployment_id=str(deployment_id),
+                    network_id=network_id,
+                )
+            except Exception as e:
+                logger.warning(
+                    "orphaned_network_cleanup_failed",
+                    deployment_id=str(deployment_id),
+                    network_id=network_id,
+                    error=str(e),
+                )
+
+    logger.info("activity_cleanup_orphaned_completed", deployment_id=str(deployment_id))
