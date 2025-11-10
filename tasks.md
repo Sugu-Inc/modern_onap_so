@@ -203,15 +203,15 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Deployment Workflow
 
-- [ ] T067 [P] [US1] Create workflow models in src/orchestrator/workflows/deployment/models.py
-- [ ] T068 [P] [US1] Write test for DeployWorkflow in tests/unit/workflows/test_deploy.py
-- [ ] T069 [US1] Create DeployWorkflow in src/orchestrator/workflows/deployment/deploy.py
-- [ ] T070 [US1] Implement workflow orchestration (create network → create VM → poll status → update DB)
-- [ ] T071 [P] [US1] Create create_network activity in src/orchestrator/workflows/deployment/activities.py
-- [ ] T072 [P] [US1] Create create_vm activity
-- [ ] T073 [P] [US1] Create poll_vm_status activity
-- [ ] T074 [P] [US1] Create update_deployment_status activity
-- [ ] T075 [US1] Implement error handling and rollback
+- [x] T067 [P] [US1] Create workflow models in src/orchestrator/workflows/deployment/models.py
+- [x] T068 [P] [US1] Write test for DeployWorkflow in tests/unit/workflows/test_deploy.py
+- [x] T069 [US1] Create DeployWorkflow in src/orchestrator/workflows/deployment/deploy.py
+- [x] T070 [US1] Implement workflow orchestration (create network → create VM → poll status → update DB)
+- [x] T071 [P] [US1] Create create_network activity in src/orchestrator/workflows/deployment/activities.py
+- [x] T072 [P] [US1] Create create_vm activity
+- [x] T073 [P] [US1] Create poll_vm_status activity
+- [x] T074 [P] [US1] Create update_deployment_status activity
+- [x] T075 [US1] Implement error handling and rollback
 
 ### Integration Tests
 
