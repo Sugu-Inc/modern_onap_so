@@ -246,13 +246,21 @@ class TestUpdateDeployment:
     ) -> None:
         """Test successful deployment update."""
         deployment_id = uuid4()
+        existing_deployment = create_mock_deployment(
+            id=deployment_id,
+            name="test-deployment",
+            status=DeploymentStatus.COMPLETED,
+            resources={"network_id": "net-123", "server_ids": ["vm-1"]},
+        )
         updated_deployment = create_mock_deployment(
             id=deployment_id,
             name="test-deployment",
             status=DeploymentStatus.COMPLETED,
             parameters={"new_param": "value"},
+            resources={"network_id": "net-123", "server_ids": ["vm-1"]},
         )
 
+        mock_deployment_repository.get_by_id.return_value = existing_deployment
         mock_deployment_repository.update.return_value = updated_deployment
 
         response = client.patch(
@@ -260,7 +268,7 @@ class TestUpdateDeployment:
             json={"parameters": {"new_param": "value"}},
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 202
         data = response.json()
         assert data["parameters"]["new_param"] == "value"
 
@@ -269,7 +277,7 @@ class TestUpdateDeployment:
     ) -> None:
         """Test updating non-existent deployment."""
         deployment_id = uuid4()
-        mock_deployment_repository.update.return_value = None
+        mock_deployment_repository.get_by_id.return_value = None
 
         response = client.patch(f"/v1/deployments/{deployment_id}", json={"parameters": {}})
 

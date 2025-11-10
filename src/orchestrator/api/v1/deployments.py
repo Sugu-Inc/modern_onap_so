@@ -161,8 +161,9 @@ async def list_deployments(
 @router.patch(
     "/{deployment_id}",
     response_model=DeploymentResponse,
+    status_code=status.HTTP_202_ACCEPTED,
     summary="Update deployment",
-    description="Update deployment parameters or resources",
+    description="Update deployment parameters and trigger infrastructure changes",
 )
 async def update_deployment(
     deployment_id: UUID,
@@ -170,11 +171,16 @@ async def update_deployment(
     repo: Annotated[DeploymentRepository, Depends(get_deployment_repository)],
 ) -> DeploymentResponse:
     """
-    Update deployment.
+    Update deployment and trigger infrastructure changes.
+
+    This triggers an async workflow to:
+    1. Resize VMs if flavor changed
+    2. Update network if CIDR changed
+    3. Update deployment status
 
     Args:
         deployment_id: Deployment unique identifier
-        request: Update request
+        request: Update request with new parameters
         repo: Deployment repository
 
     Returns:
@@ -183,20 +189,49 @@ async def update_deployment(
     Raises:
         HTTPException: If deployment not found
     """
-    # Build update kwargs
-    update_kwargs = {}
-    if request.parameters is not None:
-        update_kwargs["parameters"] = request.parameters
-    if request.resources is not None:
-        update_kwargs["resources"] = request.resources
+    # Get deployment to verify it exists and get current resources
+    deployment = await repo.get_by_id(deployment_id)
 
-    # Update deployment
-    updated_deployment = await repo.update(deployment_id, **update_kwargs)
-
-    if not updated_deployment:
+    if not deployment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Deployment {deployment_id} not found",
+        )
+
+    # Update deployment parameters in DB
+    update_kwargs = {}
+    if request.parameters is not None:
+        update_kwargs["parameters"] = request.parameters
+
+    updated_deployment = await repo.update(deployment_id, **update_kwargs)
+
+    # Trigger async workflow to update infrastructure
+    # This is non-blocking - the workflow will update the deployment status
+    if request.parameters:
+        from orchestrator.workflows.deployment.update import run_update_workflow
+
+        import asyncio
+
+        from orchestrator.config import settings
+
+        # Extract OpenStack config from settings (simplified for now)
+        openstack_config = {
+            "auth_url": "http://localhost:5000/v3",  # TODO: Load from settings
+            "username": "admin",
+            "password": "secret",
+            "project_name": "admin",
+            "region_name": deployment.cloud_region,
+        }
+
+        # Start workflow in background (fire and forget)
+        asyncio.create_task(
+            run_update_workflow(
+                deployment_id=deployment_id,
+                cloud_region=deployment.cloud_region,
+                current_resources=deployment.resources or {},
+                updated_parameters=request.parameters,
+                openstack_config=openstack_config,
+            )
         )
 
     return DeploymentResponse.model_validate(updated_deployment)

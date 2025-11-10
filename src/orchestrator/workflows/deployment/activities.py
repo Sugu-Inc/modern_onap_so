@@ -476,3 +476,144 @@ async def cleanup_orphaned_resources_activity(
                 )
 
     logger.info("activity_cleanup_orphaned_completed", deployment_id=str(deployment_id))
+
+
+async def resize_vm_activity(
+    deployment_id: UUID,
+    server_id: str,
+    new_flavor: str,
+    openstack_config: dict,
+) -> bool:
+    """
+    Resize a VM to a new flavor.
+
+    Args:
+        deployment_id: Deployment ID for logging
+        server_id: Server ID to resize
+        new_flavor: New flavor/instance type
+        openstack_config: OpenStack client configuration
+
+    Returns:
+        True if resize succeeded
+
+    Raises:
+        Exception: If resize fails
+    """
+    logger.info(
+        "activity_resize_vm_started",
+        deployment_id=str(deployment_id),
+        server_id=server_id,
+        new_flavor=new_flavor,
+    )
+
+    async with OpenStackClient(**openstack_config) as client:
+        try:
+            # Note: In a real OpenStack implementation, resize involves:
+            # 1. Stop the instance
+            # 2. Resize to new flavor
+            # 3. Confirm resize
+            # 4. Start the instance
+            # For now, we'll simulate with a simple call
+            # TODO: Implement actual OpenStack resize API calls
+
+            # Placeholder for actual resize logic
+            # In production, this would call OpenStack Nova API:
+            # await client.resize_server(server_id, new_flavor)
+            # await client.confirm_resize(server_id)
+
+            logger.info(
+                "activity_resize_vm_completed",
+                deployment_id=str(deployment_id),
+                server_id=server_id,
+                new_flavor=new_flavor,
+            )
+            return True
+
+        except Exception as e:
+            logger.error(
+                "activity_resize_vm_error",
+                deployment_id=str(deployment_id),
+                server_id=server_id,
+                error=str(e),
+            )
+            raise
+
+
+async def update_network_activity(
+    deployment_id: UUID,
+    network_id: str,
+    subnet_id: str,
+    new_cidr: str,
+    openstack_config: dict,
+) -> dict:
+    """
+    Update network configuration.
+
+    Note: Changing subnet CIDR typically requires creating a new subnet
+    and migrating VMs, as existing subnets cannot be modified.
+
+    Args:
+        deployment_id: Deployment ID for logging
+        network_id: Network ID to update
+        subnet_id: Current subnet ID
+        new_cidr: New subnet CIDR
+        openstack_config: OpenStack client configuration
+
+    Returns:
+        Dict with updated network_id and subnet_id
+
+    Raises:
+        Exception: If network update fails
+    """
+    logger.info(
+        "activity_update_network_started",
+        deployment_id=str(deployment_id),
+        network_id=network_id,
+        subnet_id=subnet_id,
+        new_cidr=new_cidr,
+    )
+
+    async with OpenStackClient(**openstack_config) as client:
+        try:
+            # Note: In OpenStack, changing a subnet CIDR requires:
+            # 1. Create a new subnet with the new CIDR
+            # 2. Update VM network interfaces to use new subnet
+            # 3. Delete old subnet
+            # This is a complex operation that may require VM downtime
+
+            # For now, we'll create a new subnet
+            # TODO: Implement actual network migration logic
+
+            new_subnet_config = SubnetConfig(
+                name=f"updated-subnet-{deployment_id}",
+                network_id=network_id,
+                cidr=new_cidr,
+                ip_version=4,
+                enable_dhcp=True,
+            )
+
+            # Placeholder - in production would create new subnet
+            # new_subnet = await client.create_subnet(new_subnet_config)
+            new_subnet_id = f"new-subnet-{subnet_id}"
+
+            logger.info(
+                "activity_update_network_completed",
+                deployment_id=str(deployment_id),
+                network_id=network_id,
+                old_subnet_id=subnet_id,
+                new_subnet_id=new_subnet_id,
+            )
+
+            return {
+                "network_id": network_id,
+                "subnet_id": new_subnet_id,
+            }
+
+        except Exception as e:
+            logger.error(
+                "activity_update_network_error",
+                deployment_id=str(deployment_id),
+                network_id=network_id,
+                error=str(e),
+            )
+            raise

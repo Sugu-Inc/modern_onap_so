@@ -84,3 +84,28 @@ class DeleteWorkflowResult(BaseModel):
     success: bool = Field(..., description="Whether deletion succeeded")
     error: str | None = Field(None, description="Error message if failed")
 
+
+class UpdateWorkflowInput(BaseModel):
+    """Input for update deployment workflow."""
+
+    deployment_id: UUID = Field(..., description="Deployment ID to update")
+    cloud_region: str = Field(..., description="Cloud region")
+    current_resources: dict = Field(
+        default_factory=dict, description="Current deployed resources"
+    )
+    updated_parameters: dict = Field(
+        default_factory=dict, description="Parameters to update"
+    )
+
+
+class UpdateWorkflowResult(BaseModel):
+    """Result of update deployment workflow."""
+
+    deployment_id: UUID = Field(..., description="Deployment ID")
+    success: bool = Field(..., description="Whether update succeeded")
+    updated_resources: dict = Field(
+        default_factory=dict, description="Updated resource information"
+    )
+    error: str | None = Field(None, description="Error message if failed")
+
+
