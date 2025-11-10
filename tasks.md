@@ -171,16 +171,16 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### OpenStack Client
 
-- [ ] T044 [P] [US1] Write test for OpenStack client in tests/unit/clients/test_openstack.py
-- [ ] T045 [US1] Create OpenStack client in src/orchestrator/clients/openstack/client.py
-- [ ] T046 [US1] Implement authenticate method (Keystone)
-- [ ] T047 [P] [US1] Implement create_server method (Nova)
-- [ ] T048 [P] [US1] Implement create_network method (Neutron)
-- [ ] T049 [P] [US1] Implement create_subnet method (Neutron)
-- [ ] T050 [P] [US1] Implement delete_server method
-- [ ] T051 [P] [US1] Implement delete_network method
-- [ ] T052 [P] [US1] Implement get_server_status method
-- [ ] T053 [P] [US1] Create OpenStack schemas in src/orchestrator/clients/openstack/schemas.py
+- [x] T044 [P] [US1] Write test for OpenStack client in tests/unit/clients/test_openstack.py
+- [x] T045 [US1] Create OpenStack client in src/orchestrator/clients/openstack/client.py
+- [x] T046 [US1] Implement authenticate method (Keystone)
+- [x] T047 [P] [US1] Implement create_server method (Nova)
+- [x] T048 [P] [US1] Implement create_network method (Neutron)
+- [x] T049 [P] [US1] Implement create_subnet method (Neutron)
+- [x] T050 [P] [US1] Implement delete_server method
+- [x] T051 [P] [US1] Implement delete_network method
+- [x] T052 [P] [US1] Implement get_server_status method
+- [x] T053 [P] [US1] Create OpenStack schemas in src/orchestrator/clients/openstack/schemas.py
 
 ### Deployment API
 
