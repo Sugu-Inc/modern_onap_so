@@ -36,9 +36,7 @@ class DeploymentService:
         self.repository = repository
         self.workflow_client = workflow_client
 
-    async def create_deployment(
-        self, request: CreateDeploymentRequest
-    ) -> DeploymentResponse:
+    async def create_deployment(self, request: CreateDeploymentRequest) -> DeploymentResponse:
         """
         Create a new deployment.
 
@@ -139,9 +137,7 @@ class DeploymentService:
         total = await self.repository.count(status=status, cloud_region=cloud_region)
 
         # Convert to response schemas
-        deployment_responses = [
-            DeploymentResponse.model_validate(d) for d in deployments
-        ]
+        deployment_responses = [DeploymentResponse.model_validate(d) for d in deployments]
 
         return deployment_responses, total
 

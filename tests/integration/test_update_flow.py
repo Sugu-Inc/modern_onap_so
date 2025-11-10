@@ -3,8 +3,7 @@
 Tests the full update flow with database operations.
 """
 
-from unittest.mock import AsyncMock, patch
-from uuid import uuid4
+from unittest.mock import patch
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -13,8 +12,8 @@ from sqlalchemy.orm import sessionmaker
 from orchestrator.db.repositories.deployment_repository import DeploymentRepository
 from orchestrator.models.base import Base
 from orchestrator.models.deployment import Deployment, DeploymentStatus
-from orchestrator.workflows.deployment.update import UpdateWorkflow
 from orchestrator.workflows.deployment.models import UpdateWorkflowInput
+from orchestrator.workflows.deployment.update import UpdateWorkflow
 
 pytestmark = pytest.mark.integration
 
@@ -46,9 +45,7 @@ async def async_session() -> AsyncSession:
 class TestUpdateDeploymentFlow:
     """Test update deployment workflow end-to-end (T099, T100)."""
 
-    async def test_update_deployment_success_vm_resize(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_update_deployment_success_vm_resize(self, async_session: AsyncSession) -> None:
         """Test successful deployment update with VM resize."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -80,9 +77,7 @@ class TestUpdateDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
         ):
             # Setup mock returns
             mock_update_status.return_value = None
@@ -185,9 +180,7 @@ class TestUpdateDeploymentFlow:
             # Verify updated resources include new subnet ID
             assert result.updated_resources["subnet_id"] == "subnet-456"
 
-    async def test_update_deployment_combined_changes(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_update_deployment_combined_changes(self, async_session: AsyncSession) -> None:
         """Test deployment update with both VM resize and network change."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -219,9 +212,7 @@ class TestUpdateDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
             patch(
                 "orchestrator.workflows.deployment.update.update_network_activity"
             ) as mock_update_network,
@@ -254,9 +245,7 @@ class TestUpdateDeploymentFlow:
             assert mock_resize_vm.call_count == 2  # 2 VMs
             mock_update_network.assert_called_once()
 
-    async def test_update_deployment_with_resize_failure(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_update_deployment_with_resize_failure(self, async_session: AsyncSession) -> None:
         """Test deployment update when VM resize fails."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -288,9 +277,7 @@ class TestUpdateDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
         ):
             # Setup mocks - resize fails
             mock_update_status.return_value = None
@@ -318,9 +305,7 @@ class TestUpdateDeploymentFlow:
             assert final_call[1]["status"] == DeploymentStatus.FAILED
             assert final_call[1]["error"] is not None
 
-    async def test_update_deployment_no_changes(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_update_deployment_no_changes(self, async_session: AsyncSession) -> None:
         """Test deployment update when no changes are requested."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -372,9 +357,7 @@ class TestUpdateDeploymentFlow:
             # Verify only status updates were called
             assert mock_update_status.call_count == 2
 
-    async def test_update_deployment_status_transitions(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_update_deployment_status_transitions(self, async_session: AsyncSession) -> None:
         """Test deployment status transitions during update."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -405,9 +388,7 @@ class TestUpdateDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
         ):
             mock_update_status.return_value = None
             mock_resize_vm.return_value = True
@@ -441,9 +422,7 @@ class TestUpdateDeploymentFlow:
             final_call = mock_update_status.call_args_list[-1]
             assert "resources" in final_call[1]
 
-    async def test_update_deployment_preserves_resources(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_update_deployment_preserves_resources(self, async_session: AsyncSession) -> None:
         """Test that update preserves existing resources correctly."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -476,9 +455,7 @@ class TestUpdateDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
         ):
             mock_update_status.return_value = None
             mock_resize_vm.return_value = True

@@ -31,9 +31,7 @@ class PlaybookResult(BaseModel):
     execution_id: UUID = Field(..., description="Unique execution ID")
     status: PlaybookStatus = Field(..., description="Execution status")
     return_code: int | None = Field(None, description="Ansible return code")
-    stats: dict[str, Any] = Field(
-        default_factory=dict, description="Ansible execution statistics"
-    )
+    stats: dict[str, Any] = Field(default_factory=dict, description="Ansible execution statistics")
     error: str | None = Field(None, description="Error message if failed")
 
 

@@ -129,9 +129,7 @@ async def create_vm_activity(
         server_result = await client.create_server(server_config)
         server_id = server_result["id"]
 
-        logger.info(
-            "vm_created", deployment_id=str(deployment_id), server_id=server_id
-        )
+        logger.info("vm_created", deployment_id=str(deployment_id), server_id=server_id)
 
         return VMCreationResult(
             server_id=server_id, server_name=vm_name, status=server_result["status"]
@@ -197,7 +195,10 @@ async def poll_vm_status_activity(
 
 
 async def update_deployment_status_activity(
-    deployment_id: UUID, status: DeploymentStatus, resources: dict | None = None, error: dict | None = None
+    deployment_id: UUID,
+    status: DeploymentStatus,
+    resources: dict | None = None,
+    error: dict | None = None,
 ) -> None:
     """
     Update deployment status in database.

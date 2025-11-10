@@ -46,9 +46,7 @@ async def async_session() -> AsyncSession:
 class TestDeleteDeploymentFlow:
     """Test delete deployment workflow end-to-end (T096, T097)."""
 
-    async def test_delete_deployment_success(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_delete_deployment_success(self, async_session: AsyncSession) -> None:
         """Test successful deployment deletion end-to-end."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -79,9 +77,7 @@ class TestDeleteDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.delete_network_activity"
             ) as mock_delete_network,
@@ -118,9 +114,7 @@ class TestDeleteDeploymentFlow:
             # Verify status updates
             assert mock_update_status.call_count == 2  # IN_PROGRESS and DELETED
 
-    async def test_delete_deployment_with_vm_failure(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_delete_deployment_with_vm_failure(self, async_session: AsyncSession) -> None:
         """Test deployment deletion when VM deletion fails."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -151,9 +145,7 @@ class TestDeleteDeploymentFlow:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.cleanup_orphaned_resources_activity"
             ) as mock_cleanup,
@@ -187,9 +179,7 @@ class TestDeleteDeploymentFlow:
             final_call = mock_update_status.call_args_list[-1]
             assert final_call[1]["status"] == DeploymentStatus.FAILED
 
-    async def test_delete_deployment_with_no_resources(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_delete_deployment_with_no_resources(self, async_session: AsyncSession) -> None:
         """Test deployment deletion when no resources exist."""
         # Setup - Create deployment in database with no resources
         repository = DeploymentRepository(async_session)
@@ -241,9 +231,7 @@ class TestDeleteDeploymentFlow:
 class TestOrphanedResourceCleanup:
     """Test orphaned resource cleanup (T098)."""
 
-    async def test_cleanup_orphaned_resources(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_cleanup_orphaned_resources(self, async_session: AsyncSession) -> None:
         """Test cleanup of orphaned resources after failed deletion."""
         # Setup - Create deployment in database
         repository = DeploymentRepository(async_session)
@@ -274,9 +262,7 @@ class TestOrphanedResourceCleanup:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.delete_network_activity"
             ) as mock_delete_network,
@@ -314,9 +300,7 @@ class TestOrphanedResourceCleanup:
             assert cleanup_call[1]["resources"]["network_id"] == "network-123"
             assert cleanup_call[1]["resources"]["server_ids"] == ["server-1", "server-2"]
 
-    async def test_cleanup_handles_partial_failures(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_cleanup_handles_partial_failures(self, async_session: AsyncSession) -> None:
         """Test that cleanup handles partial failures gracefully."""
         from orchestrator.workflows.deployment.activities import (
             cleanup_orphaned_resources_activity,
@@ -390,9 +374,7 @@ class TestOrphanedResourceCleanup:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.cleanup_orphaned_resources_activity"
             ) as mock_cleanup,

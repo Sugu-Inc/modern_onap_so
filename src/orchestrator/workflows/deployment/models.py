@@ -51,9 +51,7 @@ class DeploymentWorkflowResult(BaseModel):
     success: bool = Field(..., description="Whether deployment succeeded")
     network_id: str | None = Field(None, description="Created network ID")
     subnet_id: str | None = Field(None, description="Created subnet ID")
-    server_ids: list[str] = Field(
-        default_factory=list, description="Created server IDs"
-    )
+    server_ids: list[str] = Field(default_factory=list, description="Created server IDs")
     error: str | None = Field(None, description="Error message if failed")
 
 
@@ -63,9 +61,7 @@ class RollbackInput(BaseModel):
     deployment_id: UUID = Field(..., description="Deployment ID")
     network_id: str | None = Field(None, description="Network ID to delete")
     subnet_id: str | None = Field(None, description="Subnet ID to delete")
-    server_ids: list[str] = Field(
-        default_factory=list, description="Server IDs to delete"
-    )
+    server_ids: list[str] = Field(default_factory=list, description="Server IDs to delete")
     reason: str = Field(..., description="Reason for rollback")
 
 
@@ -90,12 +86,8 @@ class UpdateWorkflowInput(BaseModel):
 
     deployment_id: UUID = Field(..., description="Deployment ID to update")
     cloud_region: str = Field(..., description="Cloud region")
-    current_resources: dict = Field(
-        default_factory=dict, description="Current deployed resources"
-    )
-    updated_parameters: dict = Field(
-        default_factory=dict, description="Parameters to update"
-    )
+    current_resources: dict = Field(default_factory=dict, description="Current deployed resources")
+    updated_parameters: dict = Field(default_factory=dict, description="Parameters to update")
 
 
 class UpdateWorkflowResult(BaseModel):
@@ -107,5 +99,3 @@ class UpdateWorkflowResult(BaseModel):
         default_factory=dict, description="Updated resource information"
     )
     error: str | None = Field(None, description="Error message if failed")
-
-

@@ -174,9 +174,7 @@ class TestDeploymentFlowEndToEnd:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.poll_vm_status_activity"
             ) as mock_poll_status,
@@ -265,9 +263,7 @@ class TestDeploymentFlowEndToEnd:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.rollback_resources_activity"
             ) as mock_rollback,
@@ -316,9 +312,7 @@ class TestDeploymentFlowEndToEnd:
             assert final_status_call[1]["status"] == DeploymentStatus.FAILED
             assert final_status_call[1]["error"] is not None
 
-    async def test_list_deployments_pagination(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_list_deployments_pagination(self, async_session: AsyncSession) -> None:
         """Test deployment listing with pagination."""
         repository = DeploymentRepository(async_session)
 
@@ -350,9 +344,7 @@ class TestDeploymentFlowEndToEnd:
         total = await repository.count()
         assert total == 5
 
-    async def test_list_deployments_with_filters(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_list_deployments_with_filters(self, async_session: AsyncSession) -> None:
         """Test deployment listing with status filter."""
         repository = DeploymentRepository(async_session)
 
@@ -394,9 +386,7 @@ class TestDeploymentFlowEndToEnd:
         region_two_deployments = await repository.list(cloud_region="RegionTwo")
         assert len(region_two_deployments) == 1
 
-    async def test_deployment_update_resources(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_deployment_update_resources(self, async_session: AsyncSession) -> None:
         """Test updating deployment with created resources."""
         repository = DeploymentRepository(async_session)
 
@@ -431,9 +421,7 @@ class TestDeploymentFlowEndToEnd:
         assert updated.resources == resources
         assert updated.updated_at >= created.updated_at  # >= because onupdate may not fire in tests
 
-    async def test_deployment_soft_delete(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_deployment_soft_delete(self, async_session: AsyncSession) -> None:
         """Test soft deletion of deployment."""
         repository = DeploymentRepository(async_session)
 
@@ -471,9 +459,7 @@ class TestDeploymentFlowEndToEnd:
         count = result.scalar()
         assert count == 1
 
-    async def test_concurrent_deployments(
-        self, async_session: AsyncSession
-    ) -> None:
+    async def test_concurrent_deployments(self, async_session: AsyncSession) -> None:
         """Test creating multiple deployments sequentially."""
         repository = DeploymentRepository(async_session)
         service = DeploymentService(repository=repository, workflow_client=None)

@@ -50,9 +50,7 @@ class TestDeleteWorkflow:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.delete_network_activity"
             ) as mock_delete_network,
@@ -87,9 +85,7 @@ class TestDeleteWorkflow:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.cleanup_orphaned_resources_activity"
             ) as mock_cleanup,
@@ -125,9 +121,7 @@ class TestDeleteWorkflow:
             patch(
                 "orchestrator.workflows.deployment.delete.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.delete.delete_vm_activity"
-            ) as mock_delete_vm,
+            patch("orchestrator.workflows.deployment.delete.delete_vm_activity") as mock_delete_vm,
             patch(
                 "orchestrator.workflows.deployment.delete.delete_network_activity"
             ) as mock_delete_network,
@@ -153,9 +147,7 @@ class TestDeleteWorkflow:
             mock_cleanup.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_execute_with_no_resources(
-        self, mock_openstack_config: dict
-    ) -> None:
+    async def test_execute_with_no_resources(self, mock_openstack_config: dict) -> None:
         """Test workflow when deployment has no resources."""
         from orchestrator.workflows.deployment.delete import DeleteWorkflow
 
@@ -183,9 +175,7 @@ class TestDeleteWorkflow:
             assert mock_update_status.call_count == 2
 
     @pytest.mark.asyncio
-    async def test_execute_partial_resources(
-        self, mock_openstack_config: dict
-    ) -> None:
+    async def test_execute_partial_resources(self, mock_openstack_config: dict) -> None:
         """Test workflow with only some resources (e.g., only network, no VMs)."""
         from orchestrator.workflows.deployment.delete import DeleteWorkflow
 

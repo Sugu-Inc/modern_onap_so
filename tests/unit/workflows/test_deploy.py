@@ -59,9 +59,7 @@ class TestDeploymentWorkflow:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.poll_vm_status_activity"
             ) as mock_poll_status,
@@ -155,9 +153,7 @@ class TestDeploymentWorkflow:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.rollback_resources_activity"
             ) as mock_rollback,
@@ -202,9 +198,7 @@ class TestDeploymentWorkflow:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.poll_vm_status_activity"
             ) as mock_poll_status,
@@ -261,9 +255,7 @@ class TestDeploymentWorkflow:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.rollback_resources_activity"
             ) as mock_rollback,
@@ -306,9 +298,7 @@ class TestDeploymentWorkflow:
             patch(
                 "orchestrator.workflows.deployment.deploy.create_network_activity"
             ) as mock_create_network,
-            patch(
-                "orchestrator.workflows.deployment.deploy.create_vm_activity"
-            ) as mock_create_vm,
+            patch("orchestrator.workflows.deployment.deploy.create_vm_activity") as mock_create_vm,
             patch(
                 "orchestrator.workflows.deployment.deploy.poll_vm_status_activity"
             ) as mock_poll_status,

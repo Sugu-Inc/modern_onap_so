@@ -40,29 +40,31 @@ class TestAnsibleClient:
         mock_result.stats = {"ok": {"test-host": 5}, "failures": {}, "changed": {"test-host": 2}}
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None  # Thread join completes
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None  # Thread join completes
 
-                # Execute playbook
-                result = await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="test-host,",
-                    extra_vars={"var1": "value1"},
-                )
+            # Execute playbook
+            result = await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="test-host,",
+                extra_vars={"var1": "value1"},
+            )
 
-                # Verify result
-                assert result.status == PlaybookStatus.SUCCESSFUL
-                assert result.return_code == 0
-                assert result.stats["ok"]["test-host"] == 5
-                assert result.stats["changed"]["test-host"] == 2
+            # Verify result
+            assert result.status == PlaybookStatus.SUCCESSFUL
+            assert result.return_code == 0
+            assert result.stats["ok"]["test-host"] == 5
+            assert result.stats["changed"]["test-host"] == 2
 
-                # Verify ansible-runner was called correctly
-                mock_runner_module.run_async.assert_called_once()
-                call_kwargs = mock_runner_module.run_async.call_args[1]
-                assert str(call_kwargs["playbook"]) == "/path/to/playbook.yml"
-                assert call_kwargs["inventory"] == "test-host,"
-                assert call_kwargs["extravars"] == {"var1": "value1"}
+            # Verify ansible-runner was called correctly
+            mock_runner_module.run_async.assert_called_once()
+            call_kwargs = mock_runner_module.run_async.call_args[1]
+            assert str(call_kwargs["playbook"]) == "/path/to/playbook.yml"
+            assert call_kwargs["inventory"] == "test-host,"
+            assert call_kwargs["extravars"] == {"var1": "value1"}
 
     @pytest.mark.asyncio
     async def test_run_playbook_failure(self) -> None:
@@ -82,20 +84,22 @@ class TestAnsibleClient:
         }
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None
 
-                # Execute playbook
-                result = await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="test-host,",
-                )
+            # Execute playbook
+            result = await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="test-host,",
+            )
 
-                # Verify result
-                assert result.status == PlaybookStatus.FAILED
-                assert result.return_code == 2
-                assert result.stats["failures"]["test-host"] == 1
+            # Verify result
+            assert result.status == PlaybookStatus.FAILED
+            assert result.return_code == 2
+            assert result.stats["failures"]["test-host"] == 1
 
     @pytest.mark.asyncio
     async def test_run_playbook_timeout(self) -> None:
@@ -111,19 +115,21 @@ class TestAnsibleClient:
         mock_result.stats = {}
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None
 
-                # Execute playbook
-                result = await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="test-host,",
-                )
+            # Execute playbook
+            result = await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="test-host,",
+            )
 
-                # Verify result
-                assert result.status == PlaybookStatus.TIMEOUT
-                assert result.return_code is None
+            # Verify result
+            assert result.status == PlaybookStatus.TIMEOUT
+            assert result.return_code is None
 
     @pytest.mark.asyncio
     async def test_run_playbook_with_verbosity(self) -> None:
@@ -139,19 +145,21 @@ class TestAnsibleClient:
         mock_result.stats = {"ok": {"test-host": 1}}
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None
 
-                # Execute playbook
-                await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="test-host,",
-                )
+            # Execute playbook
+            await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="test-host,",
+            )
 
-                # Verify verbosity was passed
-                call_kwargs = mock_runner_module.run_async.call_args[1]
-                assert call_kwargs["verbosity"] == 3
+            # Verify verbosity was passed
+            call_kwargs = mock_runner_module.run_async.call_args[1]
+            assert call_kwargs["verbosity"] == 3
 
     @pytest.mark.asyncio
     async def test_run_playbook_with_limit(self) -> None:
@@ -167,20 +175,22 @@ class TestAnsibleClient:
         mock_result.stats = {"ok": {"specific-host": 1}}
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None
 
-                # Execute playbook with limit
-                await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="host1,host2,",
-                    limit="host1",
-                )
+            # Execute playbook with limit
+            await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="host1,host2,",
+                limit="host1",
+            )
 
-                # Verify limit was passed
-                call_kwargs = mock_runner_module.run_async.call_args[1]
-                assert call_kwargs["limit"] == "host1"
+            # Verify limit was passed
+            call_kwargs = mock_runner_module.run_async.call_args[1]
+            assert call_kwargs["limit"] == "host1"
 
     @pytest.mark.asyncio
     async def test_get_playbook_status_running(self) -> None:
@@ -222,18 +232,20 @@ class TestAnsibleClient:
         mock_result.stats = {"ok": {"test-host": 1}}
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None
 
-                # Execute playbook
-                result = await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="test-host,",
-                )
+            # Execute playbook
+            result = await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="test-host,",
+            )
 
-                # Verify execution ID was generated
-                assert result.execution_id is not None
+            # Verify execution ID was generated
+            assert result.execution_id is not None
 
     @pytest.mark.asyncio
     async def test_run_playbook_exception_handling(self) -> None:
@@ -269,21 +281,23 @@ class TestAnsibleClient:
         mock_result.stats = {"ok": {"test-host": 1}}
         mock_runner_module.run_async.return_value = (mock_thread, mock_result)
 
-        with patch.dict("sys.modules", {"ansible_runner": mock_runner_module}):
-            with patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread:
-                mock_to_thread.return_value = None
+        with (
+            patch.dict("sys.modules", {"ansible_runner": mock_runner_module}),
+            patch("asyncio.to_thread", new_callable=AsyncMock) as mock_to_thread,
+        ):
+            mock_to_thread.return_value = None
 
-                # Execute playbook with SSH key
-                await client.run_playbook(
-                    playbook_path=Path("/path/to/playbook.yml"),
-                    inventory="test-host,",
-                    ssh_private_key_path=Path("/path/to/key.pem"),
-                )
+            # Execute playbook with SSH key
+            await client.run_playbook(
+                playbook_path=Path("/path/to/playbook.yml"),
+                inventory="test-host,",
+                ssh_private_key_path=Path("/path/to/key.pem"),
+            )
 
-                # Verify SSH key was passed
-                call_kwargs = mock_runner_module.run_async.call_args[1]
-                assert "ssh_key" in call_kwargs
-                assert str(call_kwargs["ssh_key"]) == "/path/to/key.pem"
+            # Verify SSH key was passed
+            call_kwargs = mock_runner_module.run_async.call_args[1]
+            assert "ssh_key" in call_kwargs
+            assert str(call_kwargs["ssh_key"]) == "/path/to/key.pem"
 
 
 class TestPlaybookStatus:

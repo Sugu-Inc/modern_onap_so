@@ -53,9 +53,7 @@ def deployment_service(mock_repository: AsyncMock, mock_workflow_client: AsyncMo
     """Create DeploymentService with mocked dependencies."""
     from orchestrator.services.deployment_service import DeploymentService
 
-    return DeploymentService(
-        repository=mock_repository, workflow_client=mock_workflow_client
-    )
+    return DeploymentService(repository=mock_repository, workflow_client=mock_workflow_client)
 
 
 class TestCreateDeployment:
@@ -91,9 +89,7 @@ class TestCreateDeployment:
         assert created_deployment.status == DeploymentStatus.PENDING
 
         # Verify workflow was triggered
-        mock_workflow_client.start_deployment_workflow.assert_called_once_with(
-            deployment_id
-        )
+        mock_workflow_client.start_deployment_workflow.assert_called_once_with(deployment_id)
 
         # Verify response
         assert isinstance(result, DeploymentResponse)
@@ -194,9 +190,7 @@ class TestListDeployments:
         mock_repository.list.return_value = [mock_deployment1, mock_deployment2]
         mock_repository.count.return_value = 2
 
-        deployments, total = await deployment_service.list_deployments(
-            limit=10, offset=0
-        )
+        deployments, total = await deployment_service.list_deployments(limit=10, offset=0)
 
         assert len(deployments) == 2
         assert total == 2
@@ -204,18 +198,14 @@ class TestListDeployments:
         mock_repository.list.assert_called_once_with(
             status=None, cloud_region=None, limit=10, offset=0
         )
-        mock_repository.count.assert_called_once_with(
-            status=None, cloud_region=None
-        )
+        mock_repository.count.assert_called_once_with(status=None, cloud_region=None)
 
     @pytest.mark.asyncio
     async def test_list_deployments_with_filters(
         self, deployment_service, mock_repository: AsyncMock
     ) -> None:
         """Test listing deployments with status filter."""
-        mock_deployment = create_mock_deployment(
-            id=uuid4(), status=DeploymentStatus.COMPLETED
-        )
+        mock_deployment = create_mock_deployment(id=uuid4(), status=DeploymentStatus.COMPLETED)
 
         mock_repository.list.return_value = [mock_deployment]
         mock_repository.count.return_value = 1
@@ -241,9 +231,7 @@ class TestListDeployments:
         mock_repository.list.return_value = []
         mock_repository.count.return_value = 0
 
-        deployments, total = await deployment_service.list_deployments(
-            limit=10, offset=0
-        )
+        deployments, total = await deployment_service.list_deployments(limit=10, offset=0)
 
         assert len(deployments) == 0
         assert total == 0

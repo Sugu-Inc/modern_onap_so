@@ -46,9 +46,7 @@ class DeploymentWorkflow:
             "region_name": settings.openstack_region,
         }
 
-    async def execute(
-        self, workflow_input: DeploymentWorkflowInput
-    ) -> DeploymentWorkflowResult:
+    async def execute(self, workflow_input: DeploymentWorkflowInput) -> DeploymentWorkflowResult:
         """
         Execute deployment workflow.
 
@@ -80,9 +78,7 @@ class DeploymentWorkflow:
 
         try:
             # Step 1: Update status to IN_PROGRESS
-            await update_deployment_status_activity(
-                deployment_id, DeploymentStatus.IN_PROGRESS
-            )
+            await update_deployment_status_activity(deployment_id, DeploymentStatus.IN_PROGRESS)
 
             # Step 2: Create network
             network_config = template.get("network_config", {})

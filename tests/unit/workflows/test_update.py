@@ -53,9 +53,7 @@ class TestUpdateWorkflow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
         ):
             # Setup mock returns
             mock_update_status.return_value = None
@@ -85,9 +83,7 @@ class TestUpdateWorkflow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
         ):
             # Setup mocks
             mock_update_status.return_value = None
@@ -106,9 +102,7 @@ class TestUpdateWorkflow:
             assert final_call[1]["status"] == DeploymentStatus.FAILED
 
     @pytest.mark.asyncio
-    async def test_execute_with_no_changes(
-        self, mock_openstack_config: dict
-    ) -> None:
+    async def test_execute_with_no_changes(self, mock_openstack_config: dict) -> None:
         """Test workflow when no changes are requested."""
         from orchestrator.workflows.deployment.update import UpdateWorkflow
 
@@ -140,9 +134,7 @@ class TestUpdateWorkflow:
             assert mock_update_status.call_count == 2
 
     @pytest.mark.asyncio
-    async def test_execute_network_update(
-        self, mock_openstack_config: dict
-    ) -> None:
+    async def test_execute_network_update(self, mock_openstack_config: dict) -> None:
         """Test workflow with network configuration update."""
         from orchestrator.workflows.deployment.update import UpdateWorkflow
 
@@ -169,7 +161,10 @@ class TestUpdateWorkflow:
             ) as mock_update_network,
         ):
             mock_update_status.return_value = None
-            mock_update_network.return_value = {"network_id": "network-123", "subnet_id": "subnet-456"}
+            mock_update_network.return_value = {
+                "network_id": "network-123",
+                "subnet_id": "subnet-456",
+            }
 
             # Execute workflow
             workflow = UpdateWorkflow(openstack_config=mock_openstack_config)
@@ -182,9 +177,7 @@ class TestUpdateWorkflow:
             mock_update_network.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_execute_combined_updates(
-        self, mock_openstack_config: dict
-    ) -> None:
+    async def test_execute_combined_updates(self, mock_openstack_config: dict) -> None:
         """Test workflow with both VM resize and network update."""
         from orchestrator.workflows.deployment.update import UpdateWorkflow
 
@@ -207,16 +200,17 @@ class TestUpdateWorkflow:
             patch(
                 "orchestrator.workflows.deployment.update.update_deployment_status_activity"
             ) as mock_update_status,
-            patch(
-                "orchestrator.workflows.deployment.update.resize_vm_activity"
-            ) as mock_resize_vm,
+            patch("orchestrator.workflows.deployment.update.resize_vm_activity") as mock_resize_vm,
             patch(
                 "orchestrator.workflows.deployment.update.update_network_activity"
             ) as mock_update_network,
         ):
             mock_update_status.return_value = None
             mock_resize_vm.return_value = True
-            mock_update_network.return_value = {"network_id": "network-123", "subnet_id": "subnet-789"}
+            mock_update_network.return_value = {
+                "network_id": "network-123",
+                "subnet_id": "subnet-789",
+            }
 
             # Execute workflow
             workflow = UpdateWorkflow(openstack_config=mock_openstack_config)

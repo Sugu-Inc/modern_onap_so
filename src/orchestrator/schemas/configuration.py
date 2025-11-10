@@ -53,9 +53,7 @@ class ConfigurationResponse(BaseModel):
         default_factory=dict, description="Variables passed to playbook"
     )
     started_at: datetime = Field(..., description="Execution start timestamp")
-    completed_at: datetime | None = Field(
-        None, description="Execution completion timestamp"
-    )
+    completed_at: datetime | None = Field(None, description="Execution completion timestamp")
     return_code: int | None = Field(None, description="Ansible return code")
     stats: dict[str, Any] = Field(
         default_factory=dict,

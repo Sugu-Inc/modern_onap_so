@@ -1,6 +1,6 @@
 """Tests for configuration API endpoints."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 import pytest
@@ -8,7 +8,6 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from orchestrator.main import app
-from orchestrator.clients.ansible.client import PlaybookStatus
 from orchestrator.models.deployment import Deployment, DeploymentStatus
 
 
@@ -19,11 +18,9 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def mock_deployment_repository():
+def mock_deployment_repository():  # type: ignore[no-untyped-def]
     """Mock deployment repository."""
-    with patch(
-        "orchestrator.api.v1.configurations.DeploymentRepository"
-    ) as mock_repo_class:
+    with patch("orchestrator.api.v1.configurations.DeploymentRepository") as mock_repo_class:
         mock_repo = AsyncMock()
         mock_repo_class.return_value = mock_repo
         yield mock_repo
@@ -54,9 +51,7 @@ class TestConfigureDeployment:
         mock_deployment_repository.get_by_id.return_value = mock_deployment
 
         # Mock configuration workflow
-        with patch(
-            "orchestrator.api.v1.configurations.run_configure_workflow"
-        ) as mock_workflow:
+        with patch("orchestrator.api.v1.configurations.run_configure_workflow") as mock_workflow:
             mock_workflow.return_value = AsyncMock()
 
             # Execute request
@@ -125,9 +120,7 @@ class TestConfigureDeployment:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "cannot be configured" in response.json()["detail"].lower()
 
-    def test_configure_deployment_missing_playbook(
-        self, client: TestClient
-    ) -> None:
+    def test_configure_deployment_missing_playbook(self, client: TestClient) -> None:
         """Test configuration with missing playbook_path."""
         deployment_id = uuid4()
 
@@ -191,9 +184,7 @@ class TestConfigureDeployment:
         mock_deployment_repository.get_by_id.return_value = mock_deployment
 
         # Mock configuration workflow
-        with patch(
-            "orchestrator.api.v1.configurations.run_configure_workflow"
-        ) as mock_workflow:
+        with patch("orchestrator.api.v1.configurations.run_configure_workflow") as mock_workflow:
             mock_workflow.return_value = AsyncMock()
 
             # Execute request with limit
@@ -227,9 +218,7 @@ class TestConfigureDeployment:
         mock_deployment_repository.get_by_id.return_value = mock_deployment
 
         # Mock configuration workflow
-        with patch(
-            "orchestrator.api.v1.configurations.run_configure_workflow"
-        ) as mock_workflow:
+        with patch("orchestrator.api.v1.configurations.run_configure_workflow") as mock_workflow:
             mock_workflow.return_value = AsyncMock()
 
             # Execute request with extra vars
@@ -269,9 +258,7 @@ class TestConfigureDeployment:
         mock_deployment_repository.get_by_id.return_value = mock_deployment
 
         # Mock configuration workflow
-        with patch(
-            "orchestrator.api.v1.configurations.run_configure_workflow"
-        ) as mock_workflow:
+        with patch("orchestrator.api.v1.configurations.run_configure_workflow") as mock_workflow:
             # Execute request
             response = client.post(
                 f"/v1/deployments/{deployment_id}/configure",
