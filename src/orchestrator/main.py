@@ -11,9 +11,10 @@ from fastapi import FastAPI
 
 from orchestrator.api.middleware.errors import add_error_handlers
 from orchestrator.api.middleware.logging import add_logging_middleware
-from orchestrator.api.v1 import health
+from orchestrator.api.v1 import health, metrics
 from orchestrator.config import settings
 from orchestrator.logging import logger
+from orchestrator.metrics import setup_metrics
 
 
 @asynccontextmanager
@@ -25,6 +26,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     # Startup
     logger.info("application_starting", version="1.0.0")
+    setup_metrics()
     # TODO: Initialize database connection pool
     # TODO: Initialize Temporal client
     yield
@@ -51,3 +53,4 @@ add_error_handlers(app)
 
 # Include routers
 app.include_router(health.router, tags=["health"])
+app.include_router(metrics.router)
