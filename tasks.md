@@ -265,11 +265,11 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Integration Tests
 
-- [ ] T096 [US2] Write integration test for deletion in tests/integration/test_delete_flow.py
-- [ ] T097 [US2] Test deployment deletion end-to-end
-- [ ] T098 [US2] Test orphaned resource cleanup
-- [ ] T099 [US2] Write integration test for update in tests/integration/test_update_flow.py
-- [ ] T100 [US2] Test deployment update end-to-end
+- [x] T096 [US2] Write integration test for deletion in tests/integration/test_delete_flow.py
+- [x] T097 [US2] Test deployment deletion end-to-end
+- [x] T098 [US2] Test orphaned resource cleanup
+- [x] T099 [US2] Write integration test for update in tests/integration/test_update_flow.py
+- [x] T100 [US2] Test deployment update end-to-end
 
 **Acceptance:**
 - [x] DELETE /deployments/{id} removes all resources
