@@ -30,9 +30,7 @@ class ErrorResponse:
         }
 
 
-async def http_exception_handler(
-    request: Request, exc: HTTPException
-) -> JSONResponse:
+async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """
     Handle HTTP exceptions.
 
@@ -111,11 +109,11 @@ def add_error_handlers(app: FastAPI) -> None:
         app: The FastAPI application
     """
     # HTTP exceptions (404, 403, etc.)
-    app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(HTTPException, http_exception_handler)  # type: ignore[arg-type]
 
     # Validation errors (422)
-    app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(ValidationError, validation_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore[arg-type]
+    app.add_exception_handler(ValidationError, validation_exception_handler)  # type: ignore[arg-type]
 
     # Generic exceptions (500)
     app.add_exception_handler(Exception, generic_exception_handler)

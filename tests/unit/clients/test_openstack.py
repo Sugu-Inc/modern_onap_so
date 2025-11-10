@@ -1,7 +1,7 @@
 """Tests for OpenStack client."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import UUID, uuid4
+from unittest.mock import AsyncMock, patch
+from uuid import uuid4
 
 import pytest
 
@@ -9,7 +9,6 @@ from orchestrator.clients.openstack.client import OpenStackClient
 from orchestrator.clients.openstack.schemas import (
     NetworkConfig,
     ServerConfig,
-    ServerStatus,
     SubnetConfig,
 )
 
@@ -46,9 +45,7 @@ class TestOpenStackClientInit:
         assert client.project_name == openstack_config["project_name"]
         assert client.region_name == openstack_config["region_name"]
 
-    def test_client_stores_credentials_securely(
-        self, openstack_config: dict[str, str]
-    ) -> None:
+    def test_client_stores_credentials_securely(self, openstack_config: dict[str, str]) -> None:
         """Test that password is stored (in real impl, should be secured)."""
         client = OpenStackClient(**openstack_config)
 
@@ -61,9 +58,7 @@ class TestOpenStackAuthentication:
     """Test OpenStack authentication (Keystone)."""
 
     @pytest.mark.asyncio
-    async def test_authenticate_success(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_authenticate_success(self, openstack_client: OpenStackClient) -> None:
         """Test successful authentication returns token."""
         with patch.object(
             openstack_client, "_request_token", new_callable=AsyncMock
@@ -93,9 +88,7 @@ class TestOpenStackAuthentication:
                 await openstack_client.authenticate()
 
     @pytest.mark.asyncio
-    async def test_authenticate_caches_token(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_authenticate_caches_token(self, openstack_client: OpenStackClient) -> None:
         """Test that authentication token is cached."""
         with patch.object(
             openstack_client, "_request_token", new_callable=AsyncMock
@@ -119,9 +112,7 @@ class TestOpenStackServerOperations:
     """Test Nova server operations."""
 
     @pytest.mark.asyncio
-    async def test_create_server_success(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_create_server_success(self, openstack_client: OpenStackClient) -> None:
         """Test successful server creation."""
         server_config = ServerConfig(
             name="test-vm",
@@ -130,9 +121,7 @@ class TestOpenStackServerOperations:
             networks=["private-net"],
         )
 
-        with patch.object(
-            openstack_client, "_nova_request", new_callable=AsyncMock
-        ) as mock_nova:
+        with patch.object(openstack_client, "_nova_request", new_callable=AsyncMock) as mock_nova:
             server_id = uuid4()
             mock_nova.return_value = {
                 "server": {
@@ -150,15 +139,11 @@ class TestOpenStackServerOperations:
             mock_nova.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_delete_server_success(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_delete_server_success(self, openstack_client: OpenStackClient) -> None:
         """Test successful server deletion."""
         server_id = str(uuid4())
 
-        with patch.object(
-            openstack_client, "_nova_request", new_callable=AsyncMock
-        ) as mock_nova:
+        with patch.object(openstack_client, "_nova_request", new_callable=AsyncMock) as mock_nova:
             mock_nova.return_value = {"status": "deleted"}
 
             result = await openstack_client.delete_server(server_id)
@@ -167,15 +152,11 @@ class TestOpenStackServerOperations:
             mock_nova.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_get_server_status_active(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_get_server_status_active(self, openstack_client: OpenStackClient) -> None:
         """Test getting server status when active."""
         server_id = str(uuid4())
 
-        with patch.object(
-            openstack_client, "_nova_request", new_callable=AsyncMock
-        ) as mock_nova:
+        with patch.object(openstack_client, "_nova_request", new_callable=AsyncMock) as mock_nova:
             mock_nova.return_value = {
                 "server": {"id": server_id, "status": "ACTIVE", "addresses": {}}
             }
@@ -187,15 +168,11 @@ class TestOpenStackServerOperations:
             mock_nova.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_get_server_status_not_found(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_get_server_status_not_found(self, openstack_client: OpenStackClient) -> None:
         """Test getting server status for non-existent server."""
         server_id = str(uuid4())
 
-        with patch.object(
-            openstack_client, "_nova_request", new_callable=AsyncMock
-        ) as mock_nova:
+        with patch.object(openstack_client, "_nova_request", new_callable=AsyncMock) as mock_nova:
             mock_nova.side_effect = Exception("404 Not Found")
 
             with pytest.raises(Exception, match="404 Not Found"):
@@ -206,9 +183,7 @@ class TestOpenStackNetworkOperations:
     """Test Neutron network operations."""
 
     @pytest.mark.asyncio
-    async def test_create_network_success(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_create_network_success(self, openstack_client: OpenStackClient) -> None:
         """Test successful network creation."""
         network_config = NetworkConfig(name="test-network", admin_state_up=True)
 
@@ -231,9 +206,7 @@ class TestOpenStackNetworkOperations:
             mock_neutron.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_create_subnet_success(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_create_subnet_success(self, openstack_client: OpenStackClient) -> None:
         """Test successful subnet creation."""
         network_id = str(uuid4())
         subnet_config = SubnetConfig(
@@ -263,9 +236,7 @@ class TestOpenStackNetworkOperations:
             mock_neutron.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_delete_network_success(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_delete_network_success(self, openstack_client: OpenStackClient) -> None:
         """Test successful network deletion."""
         network_id = str(uuid4())
 
@@ -280,9 +251,7 @@ class TestOpenStackNetworkOperations:
             mock_neutron.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_delete_network_in_use(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_delete_network_in_use(self, openstack_client: OpenStackClient) -> None:
         """Test deleting network that is in use raises error."""
         network_id = str(uuid4())
 
@@ -299,30 +268,22 @@ class TestOpenStackErrorHandling:
     """Test error handling in OpenStack client."""
 
     @pytest.mark.asyncio
-    async def test_handles_network_timeout(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_handles_network_timeout(self, openstack_client: OpenStackClient) -> None:
         """Test handling of network timeout errors."""
-        with patch.object(
-            openstack_client, "_nova_request", new_callable=AsyncMock
-        ) as mock_nova:
+        with patch.object(openstack_client, "_nova_request", new_callable=AsyncMock) as mock_nova:
             mock_nova.side_effect = TimeoutError("Request timeout")
 
             with pytest.raises(TimeoutError, match="Request timeout"):
                 await openstack_client.get_server_status("test-id")
 
     @pytest.mark.asyncio
-    async def test_handles_quota_exceeded(
-        self, openstack_client: OpenStackClient
-    ) -> None:
+    async def test_handles_quota_exceeded(self, openstack_client: OpenStackClient) -> None:
         """Test handling of quota exceeded errors."""
         server_config = ServerConfig(
             name="test-vm", flavor="m1.small", image="ubuntu-22.04", networks=[]
         )
 
-        with patch.object(
-            openstack_client, "_nova_request", new_callable=AsyncMock
-        ) as mock_nova:
+        with patch.object(openstack_client, "_nova_request", new_callable=AsyncMock) as mock_nova:
             mock_nova.side_effect = Exception("Quota exceeded")
 
             with pytest.raises(Exception, match="Quota exceeded"):

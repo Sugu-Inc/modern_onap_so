@@ -33,9 +33,7 @@ class TestHealthEndpoint:
 
         assert data["status"] == "healthy"
 
-    def test_health_endpoint_includes_database_check(
-        self, client: TestClient
-    ) -> None:
+    def test_health_endpoint_includes_database_check(self, client: TestClient) -> None:
         """Test that health endpoint includes database status."""
         response = client.get("/health")
         data = response.json()

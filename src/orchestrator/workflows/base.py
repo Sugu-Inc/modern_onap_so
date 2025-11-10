@@ -4,8 +4,6 @@ Base classes for workflows and activities.
 TODO: Implement when workflow patterns are defined.
 """
 
-from typing import Any
-
 
 class BaseWorkflow:
     """

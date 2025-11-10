@@ -4,7 +4,6 @@ These tests require a database and are marked as integration tests.
 Run with: pytest -m integration
 """
 
-from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
@@ -32,9 +31,7 @@ async def async_session() -> AsyncSession:
         await conn.run_sync(Base.metadata.create_all)
 
     # Create session factory
-    async_session_factory = sessionmaker(
-        engine, class_=AsyncSession, expire_on_commit=False
-    )
+    async_session_factory = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     # Yield session
     async with async_session_factory() as session:
@@ -98,9 +95,7 @@ class TestDeploymentRepository:
         assert found.id == created.id
         assert found.name == "test"
 
-    async def test_get_by_id_not_found(
-        self, deployment_repository: DeploymentRepository
-    ) -> None:
+    async def test_get_by_id_not_found(self, deployment_repository: DeploymentRepository) -> None:
         """Test getting deployment by ID when not found."""
         result = await deployment_repository.get_by_id(uuid4())
         assert result is None
@@ -126,9 +121,7 @@ class TestDeploymentRepository:
         assert found is not None
         assert found.name == "unique-name"
 
-    async def test_get_by_name_not_found(
-        self, deployment_repository: DeploymentRepository
-    ) -> None:
+    async def test_get_by_name_not_found(self, deployment_repository: DeploymentRepository) -> None:
         """Test getting deployment by name when not found."""
         result = await deployment_repository.get_by_name("nonexistent")
         assert result is None
@@ -297,9 +290,7 @@ class TestDeploymentRepository:
         await async_session.commit()
 
         # Count by status
-        completed_count = await deployment_repository.count(
-            status=DeploymentStatus.COMPLETED
-        )
+        completed_count = await deployment_repository.count(status=DeploymentStatus.COMPLETED)
         assert completed_count == 2
 
         # Count by region
@@ -330,9 +321,7 @@ class TestDeploymentRepository:
         await async_session.commit()
 
         # Update status
-        updated = await deployment_repository.update(
-            created.id, status=DeploymentStatus.COMPLETED
-        )
+        updated = await deployment_repository.update(created.id, status=DeploymentStatus.COMPLETED)
         await async_session.commit()
 
         assert updated is not None

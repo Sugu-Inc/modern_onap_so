@@ -115,13 +115,9 @@ async def list_deployments(
     repo: Annotated[DeploymentRepository, Depends(get_deployment_repository)],
     status_filter: Annotated[
         DeploymentStatus | None,
-        Query(
-            alias="status", description="Filter by deployment status"
-        ),
+        Query(alias="status", description="Filter by deployment status"),
     ] = None,
-    cloud_region: Annotated[
-        str | None, Query(description="Filter by cloud region")
-    ] = None,
+    cloud_region: Annotated[str | None, Query(description="Filter by cloud region")] = None,
     limit: Annotated[int, Query(ge=1, le=1000, description="Page size")] = 100,
     offset: Annotated[int, Query(ge=0, description="Page offset")] = 0,
 ) -> DeploymentListResponse:

@@ -20,9 +20,7 @@ class TestMetricsEndpoint:
         response = client.get("/metrics")
         assert response.status_code == 200
 
-    def test_metrics_endpoint_returns_prometheus_format(
-        self, client: TestClient
-    ) -> None:
+    def test_metrics_endpoint_returns_prometheus_format(self, client: TestClient) -> None:
         """Test that metrics are in Prometheus text format."""
         response = client.get("/metrics")
         content_type = response.headers.get("content-type", "")

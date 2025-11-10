@@ -1,8 +1,6 @@
 """Tests for DeploymentTemplate model."""
 
-from datetime import datetime, timezone
-
-import pytest
+from datetime import UTC, datetime
 
 from orchestrator.models.template import DeploymentTemplate
 
@@ -33,7 +31,7 @@ class TestDeploymentTemplate:
 
     def test_template_with_explicit_values(self) -> None:
         """Test template with all fields explicitly set."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         template = DeploymentTemplate(
             name="complex-template",
             description="Complex multi-VM template",

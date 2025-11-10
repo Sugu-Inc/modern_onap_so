@@ -1,9 +1,7 @@
 """Tests for Deployment model."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
-
-import pytest
 
 from orchestrator.models.deployment import Deployment, DeploymentStatus
 
@@ -62,7 +60,7 @@ class TestDeployment:
         from uuid import uuid4
 
         deployment_id = uuid4()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         deployment = Deployment(
             id=deployment_id,
@@ -246,7 +244,7 @@ class TestDeployment:
 
     def test_deployment_with_deleted_at(self) -> None:
         """Test deployment with deleted_at timestamp."""
-        deleted_time = datetime.now(timezone.utc)
+        deleted_time = datetime.now(UTC)
         deployment = Deployment(
             name="test",
             status=DeploymentStatus.DELETED,

@@ -23,7 +23,6 @@ def app_with_error_handlers() -> FastAPI:
 
     @app.get("/test/validation")
     def test_validation():
-        from pydantic import ValidationError
         from pydantic import BaseModel
 
         class TestModel(BaseModel):
@@ -71,9 +70,7 @@ class TestErrorHandlers:
         data = response.json()
         assert "detail" in data
 
-    def test_generic_exception_hides_details_in_production(
-        self, client: TestClient
-    ) -> None:
+    def test_generic_exception_hides_details_in_production(self, client: TestClient) -> None:
         """Test that generic exceptions don't leak implementation details."""
         response = client.get("/test/500")
 

@@ -4,15 +4,14 @@ Main FastAPI application.
 This is the entry point for the Modern Infrastructure Orchestrator API.
 """
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
 from fastapi import FastAPI
 
 from orchestrator.api.middleware.errors import add_error_handlers
 from orchestrator.api.middleware.logging import add_logging_middleware
 from orchestrator.api.v1 import deployments, health, metrics
-from orchestrator.config import settings
 from orchestrator.logging import logger
 from orchestrator.metrics import setup_metrics
 

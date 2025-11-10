@@ -125,9 +125,7 @@ class TestSettings:
     def test_database_url_format(self) -> None:
         """Test database URL format."""
         # Valid PostgreSQL URL
-        settings = Settings(
-            database_url="postgresql+asyncpg://user:pass@localhost:5432/db"
-        )
+        settings = Settings(database_url="postgresql+asyncpg://user:pass@localhost:5432/db")
         assert "postgresql+asyncpg://" in str(settings.database_url)
 
     def test_workers_validation(self) -> None:

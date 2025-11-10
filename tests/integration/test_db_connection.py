@@ -29,9 +29,7 @@ class TestDatabaseConnection:
         assert engine is not None
         assert engine == db_connection.engine  # Should return same instance
 
-    async def test_session_factory_creation(
-        self, db_connection: DatabaseConnection
-    ) -> None:
+    async def test_session_factory_creation(self, db_connection: DatabaseConnection) -> None:
         """Test that session factory is created correctly."""
         factory = db_connection.session_factory
         assert factory is not None
@@ -43,9 +41,7 @@ class TestDatabaseConnection:
         assert isinstance(session, AsyncSession)
         await session.close()
 
-    async def test_session_context_manager(
-        self, db_connection: DatabaseConnection
-    ) -> None:
+    async def test_session_context_manager(self, db_connection: DatabaseConnection) -> None:
         """Test session context manager."""
         async with db_connection.session() as session:
             assert isinstance(session, AsyncSession)
@@ -53,9 +49,7 @@ class TestDatabaseConnection:
             result = await session.execute(text("SELECT 1"))
             assert result.scalar() == 1
 
-    async def test_session_context_manager_commit(
-        self, db_connection: DatabaseConnection
-    ) -> None:
+    async def test_session_context_manager_commit(self, db_connection: DatabaseConnection) -> None:
         """Test that session context manager commits on success."""
         # Create a simple table
         async with db_connection.session() as session:
@@ -81,11 +75,9 @@ class TestDatabaseConnection:
             )
 
         # Try to insert invalid data (should rollback)
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             async with db_connection.session() as session:
-                await session.execute(
-                    text("INSERT INTO test_table (id, name) VALUES (1, 'test')")
-                )
+                await session.execute(text("INSERT INTO test_table (id, name) VALUES (1, 'test')"))
                 # Force an error
                 raise Exception("Test error")
 
@@ -94,9 +86,7 @@ class TestDatabaseConnection:
             result = await session.execute(text("SELECT COUNT(*) FROM test_table"))
             assert result.scalar() == 0
 
-    async def test_health_check_success(
-        self, db_connection: DatabaseConnection
-    ) -> None:
+    async def test_health_check_success(self, db_connection: DatabaseConnection) -> None:
         """Test health check with valid connection."""
         is_healthy = await db_connection.health_check()
         assert is_healthy is True

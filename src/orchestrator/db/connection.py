@@ -4,17 +4,17 @@ Database connection and session management.
 Provides async SQLAlchemy engine and session factory for database operations.
 """
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.pool import NullPool, Pool
+from sqlalchemy.pool import NullPool
 
 from orchestrator.config import settings
 
@@ -22,7 +22,9 @@ from orchestrator.config import settings
 class DatabaseConnection:
     """Manages database connections and sessions."""
 
-    def __init__(self, database_url: str | None = None, pool_size: int = 5, max_overflow: int = 10) -> None:
+    def __init__(
+        self, database_url: str | None = None, pool_size: int = 5, max_overflow: int = 10
+    ) -> None:
         """
         Initialize database connection.
 
@@ -63,11 +65,13 @@ class DatabaseConnection:
 
         # Only add pool parameters for non-SQLite databases
         if not is_sqlite:
-            engine_kwargs.update({
-                "pool_pre_ping": True,
-                "pool_size": self.pool_size,
-                "max_overflow": self.max_overflow,
-            })
+            engine_kwargs.update(
+                {
+                    "pool_pre_ping": True,
+                    "pool_size": self.pool_size,
+                    "max_overflow": self.max_overflow,
+                }
+            )
             # Use NullPool for testing to avoid connection pool issues
             if settings.debug:
                 engine_kwargs["poolclass"] = NullPool
@@ -135,7 +139,7 @@ class DatabaseConnection:
         """
         try:
             async with self.session() as session:
-                await session.execute("SELECT 1")
+                await session.execute(text("SELECT 1"))
             return True
         except Exception:
             return False

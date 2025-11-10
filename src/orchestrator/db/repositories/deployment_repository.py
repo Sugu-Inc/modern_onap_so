@@ -4,10 +4,11 @@ Repository for deployment database operations.
 Provides CRUD operations for Deployment model.
 """
 
+from datetime import UTC
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, func, update, delete
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orchestrator.models.deployment import Deployment, DeploymentStatus
@@ -65,9 +66,7 @@ class DeploymentRepository:
         Returns:
             Deployment if found, None otherwise
         """
-        result = await self.session.execute(
-            select(Deployment).where(Deployment.name == name)
-        )
+        result = await self.session.execute(select(Deployment).where(Deployment.name == name))
         return result.scalar_one_or_none()
 
     async def list(
@@ -172,10 +171,10 @@ class DeploymentRepository:
             return False
 
         # Soft delete
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         deployment.status = DeploymentStatus.DELETED
-        deployment.deleted_at = datetime.now(timezone.utc)
+        deployment.deleted_at = datetime.now(UTC)
         await self.session.flush()
         return True
 
@@ -192,7 +191,7 @@ class DeploymentRepository:
         result = await self.session.execute(
             delete(Deployment).where(Deployment.id == deployment_id)
         )
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def exists(self, deployment_id: UUID) -> bool:
         """

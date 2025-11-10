@@ -7,8 +7,7 @@ Provides async methods for interacting with OpenStack services:
 - Neutron (networking)
 """
 
-import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
@@ -18,7 +17,6 @@ from orchestrator.clients.openstack.schemas import (
     ServerConfig,
     ServerStatus,
     SubnetConfig,
-    TokenResponse,
 )
 from orchestrator.logging import logger
 
@@ -97,14 +95,15 @@ class OpenStackClient:
             Exception: If authentication fails
         """
         # Check if cached token is still valid
-        if self._token and self._token_expires_at:
-            if datetime.now(timezone.utc) < self._token_expires_at - timedelta(
-                minutes=5
-            ):
-                return {
-                    "token": self._token,
-                    "expires_at": self._token_expires_at.isoformat(),
-                }
+        if (
+            self._token
+            and self._token_expires_at
+            and datetime.now(UTC) < self._token_expires_at - timedelta(minutes=5)
+        ):
+            return {
+                "token": self._token,
+                "expires_at": self._token_expires_at.isoformat(),
+            }
 
         # Request new token
         token_data = await self._request_token()
@@ -182,10 +181,10 @@ class OpenStackClient:
 
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 401:
-                raise Exception("401 Unauthorized")
-            raise Exception(f"Authentication failed: {e}")
+                raise Exception("401 Unauthorized") from e
+            raise Exception(f"Authentication failed: {e}") from e
         except Exception as e:
-            raise Exception(f"Authentication request failed: {e}")
+            raise Exception(f"Authentication request failed: {e}") from e
 
     async def _get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers with valid token."""
@@ -220,9 +219,7 @@ class OpenStackClient:
             payload["server"]["key_name"] = config.key_name
 
         if config.security_groups:
-            payload["server"]["security_groups"] = [
-                {"name": sg} for sg in config.security_groups
-            ]
+            payload["server"]["security_groups"] = [{"name": sg} for sg in config.security_groups]
 
         if config.user_data:
             payload["server"]["user_data"] = config.user_data
@@ -278,9 +275,7 @@ class OpenStackClient:
             created_at=server_data.get("created"),
         )
 
-    async def _nova_request(
-        self, method: str, path: str, **kwargs: Any
-    ) -> dict[str, Any]:
+    async def _nova_request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         """
         Make a request to Nova API.
 
@@ -304,9 +299,7 @@ class OpenStackClient:
         url = f"{compute_endpoint}{path}"
 
         try:
-            response = await self._http_client.request(
-                method, url, headers=headers, **kwargs
-            )
+            response = await self._http_client.request(method, url, headers=headers, **kwargs)
             response.raise_for_status()
 
             # DELETE requests often return empty body
@@ -317,15 +310,14 @@ class OpenStackClient:
 
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
-                raise Exception("404 Not Found")
-            elif e.response.status_code == 403:
-                if "quota" in e.response.text.lower():
-                    raise Exception("Quota exceeded")
-            raise Exception(f"Nova request failed: {e}")
+                raise Exception("404 Not Found") from e
+            elif e.response.status_code == 403 and "quota" in e.response.text.lower():
+                raise Exception("Quota exceeded") from e
+            raise Exception(f"Nova request failed: {e}") from e
         except httpx.TimeoutException as e:
-            raise TimeoutError("Request timeout")
+            raise TimeoutError("Request timeout") from e
         except Exception as e:
-            raise Exception(f"Nova request failed: {e}")
+            raise Exception(f"Nova request failed: {e}") from e
 
     # Neutron (Network) Operations
 
@@ -355,14 +347,10 @@ class OpenStackClient:
             payload["network"]["provider:network_type"] = config.provider_network_type
 
         if config.provider_physical_network:
-            payload["network"][
-                "provider:physical_network"
-            ] = config.provider_physical_network
+            payload["network"]["provider:physical_network"] = config.provider_physical_network
 
         if config.provider_segmentation_id is not None:
-            payload["network"][
-                "provider:segmentation_id"
-            ] = config.provider_segmentation_id
+            payload["network"]["provider:segmentation_id"] = config.provider_segmentation_id
 
         response = await self._neutron_request("POST", "/v2.0/networks", json=payload)
         return response["network"]
@@ -423,13 +411,11 @@ class OpenStackClient:
             return True
         except Exception as e:
             if "in use" in str(e).lower():
-                raise Exception("Network in use")
+                raise Exception("Network in use") from e
             logger.error("network_deletion_failed", network_id=network_id, error=str(e))
             raise
 
-    async def _neutron_request(
-        self, method: str, path: str, **kwargs: Any
-    ) -> dict[str, Any]:
+    async def _neutron_request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         """
         Make a request to Neutron API.
 
@@ -453,9 +439,7 @@ class OpenStackClient:
         url = f"{network_endpoint}{path}"
 
         try:
-            response = await self._http_client.request(
-                method, url, headers=headers, **kwargs
-            )
+            response = await self._http_client.request(method, url, headers=headers, **kwargs)
             response.raise_for_status()
 
             # DELETE requests often return empty body
@@ -466,10 +450,9 @@ class OpenStackClient:
 
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
-                raise Exception("404 Not Found")
-            elif e.response.status_code == 409:
-                if "in use" in e.response.text.lower():
-                    raise Exception("Network in use")
-            raise Exception(f"Neutron request failed: {e}")
+                raise Exception("404 Not Found") from e
+            elif e.response.status_code == 409 and "in use" in e.response.text.lower():
+                raise Exception("Network in use") from e
+            raise Exception(f"Neutron request failed: {e}") from e
         except Exception as e:
-            raise Exception(f"Neutron request failed: {e}")
+            raise Exception(f"Neutron request failed: {e}") from e

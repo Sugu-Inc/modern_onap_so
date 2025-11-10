@@ -38,9 +38,7 @@ class CreateDeploymentRequest(DeploymentBase):
         description="Deployment template configuration",
         examples=[
             {
-                "vm_config": {
-                    "web": {"flavor": "m1.small", "image": "ubuntu-22.04", "count": 2}
-                },
+                "vm_config": {"web": {"flavor": "m1.small", "image": "ubuntu-22.04", "count": 2}},
                 "network_config": {"cidr": "10.0.0.0/16"},
             }
         ],

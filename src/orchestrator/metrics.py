@@ -43,10 +43,12 @@ def setup_metrics() -> None:
     Initializes application info and metric collectors.
     """
     # Set application info
-    app_info.info({
-        "version": "1.0.0",
-        "name": "modern-orchestrator",
-    })
+    app_info.info(
+        {
+            "version": "1.0.0",
+            "name": "modern-orchestrator",
+        }
+    )
 
 
 def get_metrics() -> dict:

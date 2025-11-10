@@ -5,9 +5,8 @@ Deployment model for tracking infrastructure deployments.
 import enum
 from datetime import datetime
 from typing import Any
-from uuid import UUID
 
-from sqlalchemy import JSON, DateTime, Enum, String, Text
+from sqlalchemy import JSON, DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from orchestrator.models.base import BaseModel

@@ -1,6 +1,6 @@
 """Tests for deployment API endpoints."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -30,8 +30,8 @@ def create_mock_deployment(**kwargs):
         "resources": None,
         "error": None,
         "extra_metadata": None,
-        "created_at": datetime.now(timezone.utc),
-        "updated_at": datetime.now(timezone.utc),
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC),
         "deleted_at": None,
     }
     defaults.update(kwargs)
@@ -44,9 +44,7 @@ def create_mock_deployment(**kwargs):
 @pytest.fixture
 def mock_deployment_repository():
     """Mock deployment repository."""
-    with patch(
-        "orchestrator.api.v1.deployments.DeploymentRepository"
-    ) as mock_repo_class:
+    with patch("orchestrator.api.v1.deployments.DeploymentRepository") as mock_repo_class:
         mock_repo = AsyncMock()
         mock_repo_class.return_value = mock_repo
         yield mock_repo
@@ -273,9 +271,7 @@ class TestUpdateDeployment:
         deployment_id = uuid4()
         mock_deployment_repository.update.return_value = None
 
-        response = client.patch(
-            f"/v1/deployments/{deployment_id}", json={"parameters": {}}
-        )
+        response = client.patch(f"/v1/deployments/{deployment_id}", json={"parameters": {}})
 
         assert response.status_code == 404
 

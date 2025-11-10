@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     )
 
     # Database Configuration
-    database_url: PostgresDsn = Field(
+    database_url: PostgresDsn = Field(  # type: ignore[assignment]
         default="postgresql+asyncpg://orchestrator:password@localhost:5432/orchestrator",
         description="PostgreSQL connection URL with asyncpg driver",
     )
@@ -164,16 +164,13 @@ class Settings(BaseSettings):
             parts = key_permission.split(":")
             if len(parts) != 2:
                 raise ValueError(
-                    f"Invalid API key format: {key_permission}. "
-                    "Expected format: key:permission"
+                    f"Invalid API key format: {key_permission}. Expected format: key:permission"
                 )
             key, permission = parts
             if not key.strip():
                 raise ValueError("API key cannot be empty")
             if permission.strip() not in ("read", "write"):
-                raise ValueError(
-                    f"Invalid permission: {permission}. Must be 'read' or 'write'"
-                )
+                raise ValueError(f"Invalid permission: {permission}. Must be 'read' or 'write'")
 
         return v
 

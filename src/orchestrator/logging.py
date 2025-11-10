@@ -37,16 +37,20 @@ def setup_logging() -> structlog.BoundLogger:
     # Add format-specific processors
     if settings.log_format == "json":
         # JSON output for production
-        processors.extend([
-            structlog.processors.format_exc_info,
-            structlog.processors.JSONRenderer(),
-        ])
+        processors.extend(
+            [
+                structlog.processors.format_exc_info,
+                structlog.processors.JSONRenderer(),
+            ]
+        )
     else:
         # Console-friendly output for development
-        processors.extend([
-            structlog.dev.set_exc_info,
-            structlog.dev.ConsoleRenderer(colors=True),
-        ])
+        processors.extend(
+            [
+                structlog.dev.set_exc_info,
+                structlog.dev.ConsoleRenderer(colors=True),
+            ]
+        )
 
     # Configure structlog
     structlog.configure(
