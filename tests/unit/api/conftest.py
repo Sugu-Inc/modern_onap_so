@@ -15,7 +15,7 @@ class AuthenticatedTestClient(TestClient):
 
     def request(self, method: str, url: str, **kwargs):
         """Override request to add auth header."""
-        if "headers" not in kwargs:
+        if "headers" not in kwargs or kwargs["headers"] is None:
             kwargs["headers"] = {}
         if "X-API-Key" not in kwargs["headers"]:
             kwargs["headers"]["X-API-Key"] = self.auth_key

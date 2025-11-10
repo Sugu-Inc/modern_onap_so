@@ -58,7 +58,7 @@ class TestConfigureDeployment:
             response = client.post(
                 f"/v1/deployments/{deployment_id}/configure",
                 json={
-                    "playbook_path": "/playbooks/configure_web.yml",
+                    "playbook_path": "playbooks/configure_web.yml",
                     "extra_vars": {"app_version": "1.2.3"},
                 },
             )
@@ -83,7 +83,7 @@ class TestConfigureDeployment:
         response = client.post(
             f"/v1/deployments/{deployment_id}/configure",
             json={
-                "playbook_path": "/playbooks/configure_web.yml",
+                "playbook_path": "playbooks/configure_web.yml",
             },
         )
 
@@ -112,7 +112,7 @@ class TestConfigureDeployment:
         response = client.post(
             f"/v1/deployments/{deployment_id}/configure",
             json={
-                "playbook_path": "/playbooks/configure_web.yml",
+                "playbook_path": "playbooks/configure_web.yml",
             },
         )
 
@@ -191,7 +191,7 @@ class TestConfigureDeployment:
             response = client.post(
                 f"/v1/deployments/{deployment_id}/configure",
                 json={
-                    "playbook_path": "/playbooks/configure_web.yml",
+                    "playbook_path": "playbooks/configure_web.yml",
                     "limit": "server-1",
                 },
             )
@@ -225,7 +225,7 @@ class TestConfigureDeployment:
             response = client.post(
                 f"/v1/deployments/{deployment_id}/configure",
                 json={
-                    "playbook_path": "/playbooks/configure_web.yml",
+                    "playbook_path": "playbooks/configure_web.yml",
                     "extra_vars": {
                         "app_version": "1.2.3",
                         "environment": "production",
@@ -263,7 +263,7 @@ class TestConfigureDeployment:
             response = client.post(
                 f"/v1/deployments/{deployment_id}/configure",
                 json={
-                    "playbook_path": "/playbooks/configure_web.yml",
+                    "playbook_path": "playbooks/configure_web.yml",
                     "extra_vars": {"key": "value"},
                     "limit": "server-1",
                 },
@@ -276,6 +276,6 @@ class TestConfigureDeployment:
         # Verify workflow was called with correct parameters
         call_kwargs = mock_workflow.call_args[1]
         assert call_kwargs["deployment_id"] == deployment_id
-        assert call_kwargs["playbook_path"] == "/playbooks/configure_web.yml"
+        assert call_kwargs["playbook_path"] == "playbooks/configure_web.yml"
         assert call_kwargs["extra_vars"] == {"key": "value"}
         assert call_kwargs["limit"] == "server-1"

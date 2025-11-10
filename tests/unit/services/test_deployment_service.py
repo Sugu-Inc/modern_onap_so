@@ -19,7 +19,7 @@ def create_mock_deployment(**kwargs):
         "id": kwargs.get("id", uuid4()),
         "name": "test-deployment",
         "status": DeploymentStatus.PENDING,
-        "template": {"vm_config": {"flavor": "m1.small"}},
+        "template": {"vm_config": {"flavor": "m1.small", "image": "ubuntu-20.04"}},
         "parameters": {},
         "cloud_region": "RegionOne",
         "resources": None,
@@ -70,7 +70,7 @@ class TestCreateDeployment:
         request = CreateDeploymentRequest(
             name="test-deployment",
             cloud_region="RegionOne",
-            template={"vm_config": {"flavor": "m1.small"}},
+            template={"vm_config": {"flavor": "m1.small", "image": "ubuntu-20.04"}},
             parameters={"env": "test"},
         )
 
@@ -124,7 +124,7 @@ class TestCreateDeployment:
         request = CreateDeploymentRequest(
             name="test-deployment",
             cloud_region="RegionOne",
-            template={"vm_config": {"flavor": "m1.small"}},
+            template={"vm_config": {"flavor": "m1.small", "image": "ubuntu-20.04"}},
             parameters={},
         )
 

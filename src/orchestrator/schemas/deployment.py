@@ -9,6 +9,12 @@ from uuid import UUID
 from pydantic import BaseModel, Field, field_validator
 
 from orchestrator.models.deployment import DeploymentStatus
+from orchestrator.utils.validation import (
+    sanitize_dict,
+    validate_cloud_region,
+    validate_name,
+    validate_template,
+)
 
 
 class DeploymentBase(BaseModel):
@@ -28,6 +34,18 @@ class DeploymentBase(BaseModel):
         description="Cloud region identifier",
         examples=["us-west-1", "RegionOne"],
     )
+
+    @field_validator("name")
+    @classmethod
+    def validate_name_field(cls, v: str) -> str:
+        """Validate and sanitize deployment name."""
+        return validate_name(v)
+
+    @field_validator("cloud_region")
+    @classmethod
+    def validate_cloud_region_field(cls, v: str) -> str:
+        """Validate and sanitize cloud region."""
+        return validate_cloud_region(v)
 
 
 class CreateDeploymentRequest(DeploymentBase):
@@ -51,11 +69,15 @@ class CreateDeploymentRequest(DeploymentBase):
 
     @field_validator("template")
     @classmethod
-    def validate_template(cls, v: dict[str, Any]) -> dict[str, Any]:
-        """Validate template has required fields."""
-        if not v:
-            raise ValueError("Template cannot be empty")
-        return v
+    def validate_template_field(cls, v: dict[str, Any]) -> dict[str, Any]:
+        """Validate and sanitize template."""
+        return validate_template(v)
+
+    @field_validator("parameters")
+    @classmethod
+    def validate_parameters_field(cls, v: dict[str, Any]) -> dict[str, Any]:
+        """Sanitize parameters."""
+        return sanitize_dict(v)
 
 
 class UpdateDeploymentRequest(BaseModel):
