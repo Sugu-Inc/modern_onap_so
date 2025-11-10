@@ -215,10 +215,10 @@ A lightweight orchestrator that provisions infrastructure (VMs, networks, storag
 
 ### Integration Tests
 
-- [ ] T076 [US1] Write integration test in tests/integration/test_deploy_flow.py
-- [ ] T077 [US1] Test deployment creation with mock OpenStack
-- [ ] T078 [US1] Test workflow execution end-to-end
-- [ ] T079 [US1] Test rollback on failure
+- [x] T076 [US1] Write integration test in tests/integration/test_deploy_flow.py
+- [x] T077 [US1] Test deployment creation with mock OpenStack
+- [x] T078 [US1] Test workflow execution end-to-end
+- [x] T079 [US1] Test rollback on failure
 
 **Acceptance:**
 - [x] POST /deployments creates deployment and returns ID
