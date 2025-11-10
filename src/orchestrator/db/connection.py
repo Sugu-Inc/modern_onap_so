@@ -23,7 +23,12 @@ class DatabaseConnection:
     """Manages database connections and sessions."""
 
     def __init__(
-        self, database_url: str | None = None, pool_size: int = 5, max_overflow: int = 10
+        self,
+        database_url: str | None = None,
+        pool_size: int | None = None,
+        max_overflow: int | None = None,
+        pool_timeout: int | None = None,
+        pool_recycle: int | None = None,
     ) -> None:
         """
         Initialize database connection.
@@ -32,10 +37,14 @@ class DatabaseConnection:
             database_url: PostgreSQL connection URL. Uses settings if not provided.
             pool_size: Number of connections to maintain in the pool.
             max_overflow: Maximum overflow size of the pool.
+            pool_timeout: Timeout for getting connection from pool.
+            pool_recycle: Recycle connections after this many seconds.
         """
         self.database_url = database_url or str(settings.database_url)
-        self.pool_size = pool_size
-        self.max_overflow = max_overflow
+        self.pool_size = pool_size if pool_size is not None else settings.db_pool_size
+        self.max_overflow = max_overflow if max_overflow is not None else settings.db_max_overflow
+        self.pool_timeout = pool_timeout if pool_timeout is not None else settings.db_pool_timeout
+        self.pool_recycle = pool_recycle if pool_recycle is not None else settings.db_pool_recycle
         self._engine: AsyncEngine | None = None
         self._session_factory: async_sessionmaker[AsyncSession] | None = None
 
@@ -70,6 +79,8 @@ class DatabaseConnection:
                     "pool_pre_ping": True,
                     "pool_size": self.pool_size,
                     "max_overflow": self.max_overflow,
+                    "pool_timeout": self.pool_timeout,
+                    "pool_recycle": self.pool_recycle,
                 }
             )
             # Use NullPool for testing to avoid connection pool issues

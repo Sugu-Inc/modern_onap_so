@@ -25,6 +25,26 @@ class Settings(BaseSettings):
         default="postgresql+asyncpg://orchestrator:password@localhost:5432/orchestrator",
         description="PostgreSQL connection URL with asyncpg driver",
     )
+    db_pool_size: int = Field(
+        default=5,
+        ge=1,
+        description="Database connection pool size",
+    )
+    db_max_overflow: int = Field(
+        default=10,
+        ge=0,
+        description="Maximum overflow connections beyond pool_size",
+    )
+    db_pool_timeout: int = Field(
+        default=30,
+        ge=1,
+        description="Timeout in seconds for getting connection from pool",
+    )
+    db_pool_recycle: int = Field(
+        default=3600,
+        ge=-1,
+        description="Recycle connections after this many seconds (-1 to disable)",
+    )
 
     # Temporal Configuration
     temporal_host: str = Field(
