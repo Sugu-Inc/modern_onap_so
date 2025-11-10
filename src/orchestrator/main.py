@@ -11,7 +11,7 @@ from fastapi import FastAPI
 
 from orchestrator.api.middleware.errors import add_error_handlers
 from orchestrator.api.middleware.logging import add_logging_middleware
-from orchestrator.api.v1 import configurations, deployments, health, metrics
+from orchestrator.api.v1 import configurations, deployments, health, metrics, scaling
 from orchestrator.logging import logger
 from orchestrator.metrics import setup_metrics
 
@@ -55,3 +55,4 @@ app.include_router(health.router, tags=["health"])
 app.include_router(metrics.router)
 app.include_router(deployments.router)
 app.include_router(configurations.router)
+app.include_router(scaling.router)
