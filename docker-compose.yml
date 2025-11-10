@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: orchestrator-postgres
+    environment:
+      POSTGRES_DB: orchestrator
+      POSTGRES_USER: orchestrator
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-orchestrator_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orchestrator"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - orchestrator-network
+
+  # Orchestrator API
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orchestrator-api
+    environment:
+      # Database Configuration
+      DATABASE_URL: postgresql+asyncpg://orchestrator:${DB_PASSWORD:-orchestrator_password}@postgres:5432/orchestrator
+      DB_POOL_SIZE: 10
+      DB_MAX_OVERFLOW: 20
+      DB_POOL_TIMEOUT: 30
+      DB_POOL_RECYCLE: 3600
+
+      # Temporal Configuration
+      TEMPORAL_HOST: ${TEMPORAL_HOST:-localhost:7233}
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-default}
+      TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-orchestrator-tasks}
+
+      # OpenStack Configuration
+      OPENSTACK_AUTH_URL: ${OPENSTACK_AUTH_URL:-http://localhost:5000/v3}
+      OPENSTACK_USERNAME: ${OPENSTACK_USERNAME:-admin}
+      OPENSTACK_PASSWORD: ${OPENSTACK_PASSWORD:-secret}
+      OPENSTACK_PROJECT_NAME: ${OPENSTACK_PROJECT_NAME:-admin}
+      OPENSTACK_PROJECT_DOMAIN_NAME: ${OPENSTACK_PROJECT_DOMAIN_NAME:-Default}
+      OPENSTACK_USER_DOMAIN_NAME: ${OPENSTACK_USER_DOMAIN_NAME:-Default}
+      OPENSTACK_REGION_NAME: ${OPENSTACK_REGION_NAME:-RegionOne}
+
+      # API Configuration
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      API_WORKERS: ${API_WORKERS:-4}
+      API_RELOAD: ${API_RELOAD:-false}
+
+      # Security Configuration
+      API_KEYS: ${API_KEYS:-dev-key-1:write,dev-key-2:read}
+      SECRET_KEY: ${SECRET_KEY:-change-this-in-production-to-a-secure-random-string-at-least-32-chars}
+
+      # Logging Configuration
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+
+      # Caching Configuration (Optional)
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-300}
+
+      # Monitoring Configuration (Optional)
+      PROMETHEUS_PORT: ${PROMETHEUS_PORT:-9090}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+
+      # Ansible Configuration
+      ANSIBLE_SSH_KEY_PATH: /keys/ansible_rsa
+      ANSIBLE_VERBOSITY: ${ANSIBLE_VERBOSITY:-0}
+
+      # Development Settings
+      DEBUG: ${DEBUG:-false}
+
+    volumes:
+      # Mount SSH keys for Ansible
+      - ./keys:/keys:ro
+      # Mount logs directory
+      - ./logs:/app/logs
+
+    ports:
+      - "8000:8000"
+      - "9090:9090"  # Prometheus metrics
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+    networks:
+      - orchestrator-network
+
+    restart: unless-stopped
+
+  # Redis Cache (Optional - for future caching features)
+  redis:
+    image: redis:7-alpine
+    container_name: orchestrator-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - orchestrator-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  orchestrator-network:
+    driver: bridge

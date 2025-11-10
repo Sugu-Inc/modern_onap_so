@@ -35,7 +35,47 @@ def get_deployment_repository(
     response_model=DeploymentResponse,
     status_code=status.HTTP_202_ACCEPTED,
     summary="Create deployment",
-    description="Create a new infrastructure deployment from a template",
+    description="""
+    Create a new infrastructure deployment from a template.
+
+    The deployment is created in PENDING status and returns immediately.
+    A background workflow provisions the actual infrastructure asynchronously.
+
+    **Request Body:**
+    - `name`: Unique name for the deployment
+    - `template`: Infrastructure template (VMs, networks configuration)
+    - `parameters`: Optional parameters to override template defaults
+    - `cloud_region`: Target cloud region (e.g., "us-west-1", "RegionOne")
+
+    **Response:**
+    - Returns the created deployment with status PENDING
+    - Use GET /deployments/{id} to poll for status updates
+    - Deployment will transition to IN_PROGRESS → COMPLETED (or FAILED)
+    """,
+    responses={
+        202: {
+            "description": "Deployment created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "name": "my-web-app-prod",
+                        "status": "PENDING",
+                        "template": {
+                            "vm_config": {"flavor": "m1.small", "image": "ubuntu-22.04"}
+                        },
+                        "parameters": {},
+                        "cloud_region": "RegionOne",
+                        "resources": None,
+                        "error": None,
+                        "created_at": "2025-01-10T12:00:00Z",
+                        "updated_at": "2025-01-10T12:00:00Z",
+                    }
+                }
+            },
+        },
+        422: {"description": "Validation error - invalid template or parameters"},
+    },
 )
 async def create_deployment(
     request: CreateDeploymentRequest,
@@ -75,7 +115,21 @@ async def create_deployment(
     "/{deployment_id}",
     response_model=DeploymentResponse,
     summary="Get deployment",
-    description="Get deployment details by ID",
+    description="""
+    Retrieve deployment details by ID.
+
+    Returns complete deployment information including:
+    - Current status (PENDING, IN_PROGRESS, COMPLETED, FAILED, etc.)
+    - Template and parameters
+    - Created resource IDs (if deployment completed)
+    - Error details (if deployment failed)
+
+    Use this endpoint to poll deployment status after creation.
+    """,
+    responses={
+        200: {"description": "Deployment found"},
+        404: {"description": "Deployment not found"},
+    },
 )
 async def get_deployment(
     deployment_id: UUID,
