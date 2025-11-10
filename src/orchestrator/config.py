@@ -121,6 +121,20 @@ class Settings(BaseSettings):
         min_length=32,
         description="Secret key for signing tokens",
     )
+    rate_limit_enabled: bool = Field(
+        default=True,
+        description="Enable rate limiting middleware",
+    )
+    rate_limit_requests: int = Field(
+        default=100,
+        ge=1,
+        description="Maximum requests allowed per time window",
+    )
+    rate_limit_window_seconds: int = Field(
+        default=60,
+        ge=1,
+        description="Time window for rate limiting in seconds",
+    )
 
     # Logging Configuration
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
