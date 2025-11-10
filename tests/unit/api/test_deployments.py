@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
-from fastapi.testclient import TestClient
+from tests.unit.api.conftest import AuthenticatedTestClient as TestClient
 
 from orchestrator.models.deployment import DeploymentStatus
 
@@ -15,7 +15,7 @@ def client() -> TestClient:
     """Create test client with deployments router."""
     from orchestrator.main import app
 
-    return TestClient(app, raise_server_exceptions=False)
+    return TestClient(app, auth_key="dev-key-1", raise_server_exceptions=False)
 
 
 def create_mock_deployment(**kwargs):

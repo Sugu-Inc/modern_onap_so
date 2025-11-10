@@ -9,9 +9,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from orchestrator.api.middleware.auth import add_auth_middleware
 from orchestrator.api.middleware.errors import add_error_handlers
 from orchestrator.api.middleware.logging import add_logging_middleware
 from orchestrator.api.v1 import configurations, deployments, health, metrics, scaling
+from orchestrator.config import settings
 from orchestrator.logging import logger
 from orchestrator.metrics import setup_metrics
 
@@ -106,8 +108,9 @@ API requests are rate limited to 100 requests per minute per API key.
     ],
 )
 
-# Add middleware (order matters: logging first, then errors)
+# Add middleware (order matters: logging first, then auth, then errors)
 add_logging_middleware(app)
+add_auth_middleware(app, settings.api_keys)
 add_error_handlers(app)
 
 # Include routers

@@ -2,7 +2,7 @@
 
 import pytest
 from fastapi import FastAPI, HTTPException
-from fastapi.testclient import TestClient
+from tests.unit.api.conftest import AuthenticatedTestClient as TestClient
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def app_with_error_handlers() -> FastAPI:
 def client(app_with_error_handlers: FastAPI) -> TestClient:
     """Create test client with error handlers."""
     # raise_server_exceptions=False allows error handlers to process exceptions
-    return TestClient(app_with_error_handlers, raise_server_exceptions=False)
+    return TestClient(app_with_error_handlers, auth_key="dev-key-1", raise_server_exceptions=False)
 
 
 class TestErrorHandlers:

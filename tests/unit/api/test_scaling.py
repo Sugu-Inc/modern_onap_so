@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 from fastapi import status
-from fastapi.testclient import TestClient
+from tests.unit.api.conftest import AuthenticatedTestClient as TestClient
 
 from orchestrator.main import app
 from orchestrator.models.deployment import Deployment, DeploymentStatus
@@ -14,7 +14,7 @@ from orchestrator.models.deployment import Deployment, DeploymentStatus
 @pytest.fixture
 def client() -> TestClient:
     """Create test client."""
-    return TestClient(app, raise_server_exceptions=False)
+    return TestClient(app, auth_key="dev-key-1", raise_server_exceptions=False)
 
 
 @pytest.fixture

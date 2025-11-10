@@ -1,7 +1,7 @@
 """Tests for health endpoint."""
 
 import pytest
-from fastapi.testclient import TestClient
+from tests.unit.api.conftest import AuthenticatedTestClient as TestClient
 
 
 class TestHealthEndpoint:
@@ -47,4 +47,4 @@ def client() -> TestClient:
     """Create a test client for the FastAPI app."""
     from orchestrator.main import app
 
-    return TestClient(app)
+    return TestClient(app, auth_key="dev-key-1")
