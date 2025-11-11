@@ -471,7 +471,7 @@ class TestDeploymentFlowEndToEnd:
             CreateDeploymentRequest(
                 name=f"concurrent-deployment-{i}",
                 cloud_region="RegionOne",
-                template={"vm_config": {"flavor": "m1.small"}},
+                template={"vm_config": {"flavor": "m1.small", "image": "ubuntu-20.04"}},
                 parameters={},
             )
             for i in range(3)
