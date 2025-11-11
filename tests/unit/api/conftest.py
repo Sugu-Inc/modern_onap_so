@@ -13,13 +13,43 @@ class AuthenticatedTestClient(TestClient):
         self.auth_key = kwargs.pop("auth_key", "dev-key-1")
         super().__init__(*args, **kwargs)
 
-    def request(self, method: str, url: str, **kwargs):
-        """Override request to add auth header."""
+    def _add_auth_header(self, kwargs: dict) -> dict:
+        """Add authentication header to request kwargs."""
         if "headers" not in kwargs or kwargs["headers"] is None:
             kwargs["headers"] = {}
         if "X-API-Key" not in kwargs["headers"]:
             kwargs["headers"]["X-API-Key"] = self.auth_key
+        return kwargs
+
+    def request(self, method: str, url: str, **kwargs):
+        """Override request to add auth header."""
+        kwargs = self._add_auth_header(kwargs)
         return super().request(method, url, **kwargs)
+
+    def get(self, url: str, **kwargs):
+        """GET request with auth header."""
+        kwargs = self._add_auth_header(kwargs)
+        return super().get(url, **kwargs)
+
+    def post(self, url: str, **kwargs):
+        """POST request with auth header."""
+        kwargs = self._add_auth_header(kwargs)
+        return super().post(url, **kwargs)
+
+    def put(self, url: str, **kwargs):
+        """PUT request with auth header."""
+        kwargs = self._add_auth_header(kwargs)
+        return super().put(url, **kwargs)
+
+    def patch(self, url: str, **kwargs):
+        """PATCH request with auth header."""
+        kwargs = self._add_auth_header(kwargs)
+        return super().patch(url, **kwargs)
+
+    def delete(self, url: str, **kwargs):
+        """DELETE request with auth header."""
+        kwargs = self._add_auth_header(kwargs)
+        return super().delete(url, **kwargs)
 
 
 @pytest.fixture
