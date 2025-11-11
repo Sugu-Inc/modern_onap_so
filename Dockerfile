@@ -4,26 +4,28 @@ FROM python:3.12-slim as builder
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_SYSTEM_PYTHON=1
+    POETRY_VERSION=1.7.1 \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
+    gcc \
     build-essential \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.cargo/bin:$PATH"
+# Install Poetry
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 # Set working directory
 WORKDIR /app
 
 # Copy dependency files
-COPY pyproject.toml README.md ./
+COPY pyproject.toml poetry.lock ./
 
-# Install dependencies
-RUN uv pip install --no-cache -r pyproject.toml
+# Install dependencies (only production)
+RUN poetry install --no-interaction --no-ansi --no-root --only main
 
 # ---
 # Final stage
@@ -31,12 +33,12 @@ FROM python:3.12-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/app/.venv/bin:$PATH"
+    PYTHONDONTWRITEBYTECODE=1
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
@@ -51,7 +53,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY src/ ./src/
-COPY migrations/ ./migrations/
+COPY alembic/ ./alembic/
 COPY alembic.ini ./
 
 # Create required directories
@@ -69,4 +71,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Run the application
-CMD ["uvicorn", "orchestrator.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "orchestrator.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
