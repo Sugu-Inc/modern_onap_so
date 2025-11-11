@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: onap-orchestrator
+
+bases:
+- ../../base
+
+nameSuffix: -prod
+
+commonLabels:
+  environment: production
+
+replicas:
+- name: orchestrator-api
+  count: 5
+
+images:
+- name: onap-so-modern
+  newTag: v1.0.0
+
+patchesStrategicMerge:
+- deployment-patch.yaml
+- hpa-patch.yaml
+
+configMapGenerator:
+- name: orchestrator-config
+  behavior: merge
+  literals:
+  - log-level=INFO
+  - api-workers=4
+  - db-pool-size=20
+  - db-max-overflow=40

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orchestrator-config
+  namespace: onap-orchestrator
+  labels:
+    app: orchestrator
+data:
+  # Temporal Configuration
+  temporal-host: "temporal.temporal-system:7233"
+  temporal-namespace: "default"
+  temporal-task-queue: "orchestrator-tasks"
+
+  # OpenStack Configuration
+  openstack-auth-url: "http://keystone.openstack:5000/v3"
+  openstack-username: "admin"
+  openstack-project-name: "admin"
+  openstack-project-domain-name: "Default"
+  openstack-user-domain-name: "Default"
+  openstack-region-name: "RegionOne"
+
+  # Database Configuration
+  db-pool-size: "10"
+  db-max-overflow: "20"
+  db-pool-timeout: "30"
+  db-pool-recycle: "3600"
+
+  # Logging Configuration
+  log-level: "INFO"
+  log-format: "json"
+
+  # API Configuration
+  api-workers: "4"
+
+  # Caching Configuration
+  cache-ttl-seconds: "300"
+
+  # Ansible Configuration
+  ansible-verbosity: "0"

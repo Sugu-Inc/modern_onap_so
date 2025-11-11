@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: onap-orchestrator
+  labels:
+    app: orchestrator
+    environment: production
