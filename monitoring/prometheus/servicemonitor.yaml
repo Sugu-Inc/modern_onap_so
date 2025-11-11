@@ -1,0 +1,87 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: orchestrator-api
+  namespace: onap-orchestrator
+  labels:
+    app: orchestrator
+    component: api
+    prometheus: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: orchestrator
+      component: api
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    scheme: http
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+    metricRelabelings:
+    # Drop high cardinality metrics if needed
+    - sourceLabels: [__name__]
+      regex: 'go_.*'
+      action: drop
+    - sourceLabels: [__name__]
+      regex: 'process_.*'
+      action: drop
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: orchestrator-alerts
+  namespace: onap-orchestrator
+  labels:
+    app: orchestrator
+    prometheus: kube-prometheus
+spec:
+  groups:
+  - name: orchestrator.rules
+    interval: 30s
+    rules:
+    # Include alert rules from alerts.yaml
+    - alert: OrchestratorAPIDown
+      expr: up{job="orchestrator-api"} == 0
+      for: 2m
+      labels:
+        severity: critical
+        component: api
+      annotations:
+        summary: "Orchestrator API is down"
+        description: "The orchestrator API has been down for more than 2 minutes."
+
+    - alert: OrchestratorHighErrorRate
+      expr: |
+        (
+          rate(http_requests_total{job="orchestrator-api",status=~"5.."}[5m])
+          /
+          rate(http_requests_total{job="orchestrator-api"}[5m])
+        ) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+        component: api
+      annotations:
+        summary: "High error rate detected (>5%)"
+        description: "Error rate: {{ $value | humanizePercentage }}"
+
+    - alert: OrchestratorHighLatency
+      expr: |
+        histogram_quantile(0.95,
+          rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+        ) > 2
+      for: 10m
+      labels:
+        severity: warning
+        component: api
+      annotations:
+        summary: "High API latency (P95 > 2s)"
+        description: "P95 latency: {{ $value | humanizeDuration }}"

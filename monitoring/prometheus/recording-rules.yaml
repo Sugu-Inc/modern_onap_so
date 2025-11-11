@@ -1,0 +1,179 @@
+groups:
+- name: orchestrator_recording_rules
+  interval: 30s
+  rules:
+  # API Request Metrics
+  - record: orchestrator:http_requests:rate5m
+    expr: |
+      rate(http_requests_total{job="orchestrator-api"}[5m])
+
+  - record: orchestrator:http_requests:rate1h
+    expr: |
+      rate(http_requests_total{job="orchestrator-api"}[1h])
+
+  - record: orchestrator:http_requests_errors:rate5m
+    expr: |
+      rate(http_requests_total{job="orchestrator-api",status=~"5.."}[5m])
+
+  - record: orchestrator:http_requests_errors:ratio5m
+    expr: |
+      (
+        rate(http_requests_total{job="orchestrator-api",status=~"5.."}[5m])
+        /
+        rate(http_requests_total{job="orchestrator-api"}[5m])
+      )
+
+  # Latency Metrics
+  - record: orchestrator:http_request_duration:p50
+    expr: |
+      histogram_quantile(0.50,
+        rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+      )
+
+  - record: orchestrator:http_request_duration:p95
+    expr: |
+      histogram_quantile(0.95,
+        rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+      )
+
+  - record: orchestrator:http_request_duration:p99
+    expr: |
+      histogram_quantile(0.99,
+        rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+      )
+
+  # Deployment Metrics
+  - record: orchestrator:deployments_total:rate5m
+    expr: |
+      rate(deployment_total{job="orchestrator-api"}[5m])
+
+  - record: orchestrator:deployments_by_status:rate5m
+    expr: |
+      rate(deployment_total{job="orchestrator-api"}[5m])
+
+  - record: orchestrator:deployment_success_rate:5m
+    expr: |
+      (
+        rate(deployment_total{job="orchestrator-api",status="completed"}[5m])
+        /
+        rate(deployment_total{job="orchestrator-api"}[5m])
+      )
+
+  - record: orchestrator:deployment_duration:p95
+    expr: |
+      histogram_quantile(0.95,
+        rate(deployment_duration_seconds_bucket{job="orchestrator-api"}[10m])
+      )
+
+  # Resource Utilization
+  - record: orchestrator:pod_cpu_usage:ratio
+    expr: |
+      (
+        rate(container_cpu_usage_seconds_total{pod=~"orchestrator-api-.*"}[5m])
+        /
+        container_spec_cpu_quota{pod=~"orchestrator-api-.*"} * 100000
+      )
+
+  - record: orchestrator:pod_memory_usage:ratio
+    expr: |
+      (
+        container_memory_working_set_bytes{pod=~"orchestrator-api-.*"}
+        /
+        container_spec_memory_limit_bytes{pod=~"orchestrator-api-.*"}
+      )
+
+  # Database Metrics
+  - record: orchestrator:db_connections:ratio
+    expr: |
+      (
+        (orchestrator_db_pool_size - orchestrator_db_pool_available)
+        /
+        orchestrator_db_pool_size
+      )
+
+  - record: orchestrator:db_query_duration:p95
+    expr: |
+      histogram_quantile(0.95,
+        rate(db_query_duration_seconds_bucket{job="orchestrator-api"}[5m])
+      )
+
+  # Cache Metrics
+  - record: orchestrator:cache_hit_rate:5m
+    expr: |
+      (
+        rate(cache_hit_total{job="orchestrator-api"}[5m])
+        /
+        rate(cache_requests_total{job="orchestrator-api"}[5m])
+      )
+
+  - record: orchestrator:cache_miss_rate:5m
+    expr: |
+      (
+        rate(cache_miss_total{job="orchestrator-api"}[5m])
+        /
+        rate(cache_requests_total{job="orchestrator-api"}[5m])
+      )
+
+  # Rate Limiting Metrics
+  - record: orchestrator:rate_limit_exceeded:rate5m
+    expr: |
+      rate(rate_limit_exceeded_total{job="orchestrator-api"}[5m])
+
+  # SLO Metrics (30-day windows)
+  - record: orchestrator:availability:30d
+    expr: |
+      (
+        sum(rate(http_requests_total{job="orchestrator-api",status!~"5.."}[30d]))
+        /
+        sum(rate(http_requests_total{job="orchestrator-api"}[30d]))
+      )
+
+  - record: orchestrator:latency_p99:30d
+    expr: |
+      histogram_quantile(0.99,
+        rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[30d])
+      )
+
+  # Error Budget (1% error budget = 99% availability SLO)
+  - record: orchestrator:error_budget:30d
+    expr: |
+      1 - (
+        sum(rate(http_requests_total{job="orchestrator-api",status=~"5.."}[30d]))
+        /
+        sum(rate(http_requests_total{job="orchestrator-api"}[30d]))
+      )
+
+  # Aggregated Metrics by Endpoint
+  - record: orchestrator:http_requests_by_endpoint:rate5m
+    expr: |
+      sum by (method, path) (
+        rate(http_requests_total{job="orchestrator-api"}[5m])
+      )
+
+  - record: orchestrator:http_request_duration_by_endpoint:p95
+    expr: |
+      histogram_quantile(0.95,
+        sum by (method, path, le) (
+          rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+        )
+      )
+
+  # Top Error Endpoints
+  - record: orchestrator:top_error_endpoints:5m
+    expr: |
+      topk(10,
+        sum by (method, path) (
+          rate(http_requests_total{job="orchestrator-api",status=~"5.."}[5m])
+        )
+      )
+
+  # Top Slow Endpoints
+  - record: orchestrator:top_slow_endpoints:5m
+    expr: |
+      topk(10,
+        histogram_quantile(0.95,
+          sum by (method, path, le) (
+            rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+          )
+        )
+      )
