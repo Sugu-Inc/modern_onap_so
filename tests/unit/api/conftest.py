@@ -12,19 +12,30 @@ class AuthenticatedTestClient(TestClient):
     """Test client that automatically adds auth headers."""
 
     def __init__(self, app: ASGI3App, auth_key: str = "dev-key-1", **kwargs: Any):
-        # Store auth key before passing to parent
-        self._auth_key = auth_key
-        # Initialize parent without auth_key in kwargs
+        # Initialize parent first
         super().__init__(app, **kwargs)
+        # Store auth key for later use
+        self._auth_key = auth_key
 
     def request(self, method: str, url: str, **kwargs: Any):
-        """Override request to add auth header."""
-        # Inject auth header if not already present
-        if "headers" not in kwargs:
-            kwargs["headers"] = {}
-        if isinstance(kwargs["headers"], dict):
-            if "X-API-Key" not in kwargs["headers"] and "x-api-key" not in kwargs["headers"]:
-                kwargs["headers"]["X-API-Key"] = self._auth_key
+        """Override request to inject auth header."""
+        # Get existing headers or create new dict
+        headers = kwargs.get("headers", {})
+
+        # Convert to dict if needed (handle various input types)
+        if not isinstance(headers, dict):
+            headers = dict(headers) if headers else {}
+        else:
+            # Make a copy to avoid mutating the original
+            headers = headers.copy()
+
+        # Add auth header if not present
+        if "X-API-Key" not in headers and "x-api-key" not in headers:
+            headers["X-API-Key"] = self._auth_key
+
+        # Update kwargs with merged headers
+        kwargs["headers"] = headers
+
         return super().request(method, url, **kwargs)
 
 
