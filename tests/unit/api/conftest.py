@@ -12,31 +12,17 @@ class AuthenticatedTestClient(TestClient):
     """Test client that automatically adds auth headers."""
 
     def __init__(self, app: ASGI3App, auth_key: str = "dev-key-1", **kwargs: Any):
-        # Initialize parent first
+        # Set up default headers with auth key
+        default_headers = {"X-API-Key": auth_key}
+
+        # Merge with any existing headers from kwargs
+        if "headers" in kwargs:
+            # If headers provided, merge them (user headers take precedence)
+            default_headers.update(kwargs["headers"])
+
+        # Pass merged headers to parent
+        kwargs["headers"] = default_headers
         super().__init__(app, **kwargs)
-        # Store auth key for later use
-        self._auth_key = auth_key
-
-    def request(self, method: str, url: str, **kwargs: Any):
-        """Override request to inject auth header."""
-        # Get existing headers or create new dict
-        headers = kwargs.get("headers", {})
-
-        # Convert to dict if needed (handle various input types)
-        if not isinstance(headers, dict):
-            headers = dict(headers) if headers else {}
-        else:
-            # Make a copy to avoid mutating the original
-            headers = headers.copy()
-
-        # Add auth header if not present
-        if "X-API-Key" not in headers and "x-api-key" not in headers:
-            headers["X-API-Key"] = self._auth_key
-
-        # Update kwargs with merged headers
-        kwargs["headers"] = headers
-
-        return super().request(method, url, **kwargs)
 
 
 @pytest.fixture
