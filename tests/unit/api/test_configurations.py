@@ -14,7 +14,7 @@ from orchestrator.models.deployment import Deployment, DeploymentStatus
 @pytest.fixture
 def client() -> TestClient:
     """Create test client."""
-    return TestClient(app, auth_key="dev-key-1", raise_server_exceptions=False)
+    return TestClient(app, auth_key="test-key-1", raise_server_exceptions=False)
 
 
 @pytest.fixture

@@ -36,7 +36,7 @@ def app_with_logging() -> FastAPI:
 @pytest.fixture
 def client(app_with_logging: FastAPI) -> TestClient:
     """Create test client with logging middleware."""
-    return TestClient(app_with_logging, auth_key="dev-key-1", raise_server_exceptions=False)
+    return TestClient(app_with_logging, auth_key="test-key-1", raise_server_exceptions=False)
 
 
 class TestLoggingMiddleware:

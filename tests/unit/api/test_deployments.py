@@ -15,7 +15,7 @@ def client() -> TestClient:
     """Create test client with deployments router."""
     from orchestrator.main import app
 
-    return TestClient(app, auth_key="dev-key-1", raise_server_exceptions=False)
+    return TestClient(app, auth_key="test-key-1", raise_server_exceptions=False)
 
 
 def create_mock_deployment(**kwargs):

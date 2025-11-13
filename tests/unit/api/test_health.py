@@ -47,4 +47,4 @@ def client() -> TestClient:
     """Create a test client for the FastAPI app."""
     from orchestrator.main import app
 
-    return TestClient(app, auth_key="dev-key-1")
+    return TestClient(app, auth_key="test-key-1")

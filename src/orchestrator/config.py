@@ -113,7 +113,7 @@ class Settings(BaseSettings):
 
     # Security Configuration
     api_keys: str = Field(
-        default="dev-key-1:write,dev-key-2:read",
+        default="test-key-1:write,test-key-2:read",
         description="Comma-separated API keys with permissions (key:permission)",
     )
     secret_key: str = Field(
