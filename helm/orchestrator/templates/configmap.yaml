@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "orchestrator.fullname" . }}
+  labels:
+    {{- include "orchestrator.labels" . | nindent 4 }}
+data:
+  temporal-host: {{ .Values.config.temporal.host | quote }}
+  temporal-namespace: {{ .Values.config.temporal.namespace | quote }}
+  temporal-task-queue: {{ .Values.config.temporal.taskQueue | quote }}
+  openstack-auth-url: {{ .Values.config.openstack.authUrl | quote }}
+  openstack-username: {{ .Values.config.openstack.username | quote }}
+  openstack-project-name: {{ .Values.config.openstack.projectName | quote }}
+  openstack-region-name: {{ .Values.config.openstack.regionName | quote }}
+  log-level: {{ .Values.config.logging.level | quote }}
+  log-format: {{ .Values.config.logging.format | quote }}

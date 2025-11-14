@@ -1,0 +1,14 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: orchestrator-api
+  namespace: onap-orchestrator
+  labels:
+    app: orchestrator
+    component: api
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: orchestrator
+      component: api

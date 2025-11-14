@@ -1,0 +1,204 @@
+{
+  "dashboard": {
+    "title": "Orchestrator - Performance",
+    "tags": ["orchestrator", "performance"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Latency Percentiles",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P99"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Latency"}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Request Rate by Endpoint",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (method, path) (rate(http_requests_total{job=\"orchestrator-api\"}[5m])))",
+            "legendFormat": "{{method}} {{path}}"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Slowest Endpoints (P95)",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, histogram_quantile(0.95, sum by (method, path, le) (rate(http_request_duration_seconds_bucket{job=\"orchestrator-api\"}[5m]))))",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true, "le": true},
+              "renameByName": {
+                "method": "Method",
+                "path": "Path",
+                "Value": "P95 Latency (s)"
+              }
+            }
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Error Rate by Endpoint",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (method, path) (rate(http_requests_total{job=\"orchestrator-api\",status=~\"5..\"}[5m])))",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true},
+              "renameByName": {
+                "method": "Method",
+                "path": "Path",
+                "Value": "Errors/sec"
+              }
+            }
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Deployment Duration (P95)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(deployment_duration_seconds_bucket{job=\"orchestrator-api\"}[10m]))",
+            "legendFormat": "P95 Duration"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Duration"}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Deployment Success Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(deployment_total{job=\"orchestrator-api\",status=\"completed\"}[5m])) / sum(rate(deployment_total{job=\"orchestrator-api\"}[5m])) * 100",
+            "legendFormat": "Success Rate %"
+          }
+        ],
+        "yaxes": [
+          {"format": "percent", "label": "Success %", "min": 0, "max": 100}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Database Query Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(db_query_duration_seconds_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P95 Query Latency"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Latency"}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 8,
+        "title": "Cache Hit Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(cache_hit_total{job=\"orchestrator-api\"}[5m])) / sum(rate(cache_requests_total{job=\"orchestrator-api\"}[5m])) * 100",
+            "legendFormat": "Cache Hit Rate %"
+          }
+        ],
+        "yaxes": [
+          {"format": "percent", "label": "Hit Rate %", "min": 0, "max": 100}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Rate Limit Exceeded",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum by (client) (rate(rate_limit_exceeded_total{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "{{client}}"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Exceeded/sec"}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32}
+      },
+      {
+        "id": 10,
+        "title": "Request Size Distribution",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_size_bytes_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_size_bytes_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_size_bytes_bucket{job=\"orchestrator-api\"}[5m]))",
+            "legendFormat": "P99"
+          }
+        ],
+        "yaxes": [
+          {"format": "bytes", "label": "Request Size"}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32}
+      }
+    ]
+  }
+}

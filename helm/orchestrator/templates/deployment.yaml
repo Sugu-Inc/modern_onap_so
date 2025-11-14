@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "orchestrator.fullname" . }}
+  labels:
+    {{- include "orchestrator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      {{- include "orchestrator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "orchestrator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "orchestrator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: api
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.config.api.port }}
+          protocol: TCP
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "orchestrator.fullname" . }}
+              key: database-url
+        - name: API_KEYS
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "orchestrator.fullname" . }}
+              key: api-keys
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "orchestrator.fullname" . }}
+              key: secret-key
+        - name: OPENSTACK_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "orchestrator.fullname" . }}
+              key: openstack-password
+        - name: TEMPORAL_HOST
+          value: {{ .Values.config.temporal.host | quote }}
+        - name: TEMPORAL_NAMESPACE
+          value: {{ .Values.config.temporal.namespace | quote }}
+        - name: TEMPORAL_TASK_QUEUE
+          value: {{ .Values.config.temporal.taskQueue | quote }}
+        - name: OPENSTACK_AUTH_URL
+          value: {{ .Values.config.openstack.authUrl | quote }}
+        - name: OPENSTACK_USERNAME
+          value: {{ .Values.config.openstack.username | quote }}
+        - name: OPENSTACK_PROJECT_NAME
+          value: {{ .Values.config.openstack.projectName | quote }}
+        - name: OPENSTACK_PROJECT_DOMAIN_NAME
+          value: {{ .Values.config.openstack.projectDomainName | quote }}
+        - name: OPENSTACK_USER_DOMAIN_NAME
+          value: {{ .Values.config.openstack.userDomainName | quote }}
+        - name: OPENSTACK_REGION_NAME
+          value: {{ .Values.config.openstack.regionName | quote }}
+        - name: LOG_LEVEL
+          value: {{ .Values.config.logging.level | quote }}
+        - name: LOG_FORMAT
+          value: {{ .Values.config.logging.format | quote }}
+        - name: API_HOST
+          value: {{ .Values.config.api.host | quote }}
+        - name: API_PORT
+          value: {{ .Values.config.api.port | quote }}
+        - name: API_WORKERS
+          value: {{ .Values.config.api.workers | quote }}
+        - name: RATE_LIMIT_ENABLED
+          value: {{ .Values.config.rateLimit.enabled | quote }}
+        - name: RATE_LIMIT_REQUESTS
+          value: {{ .Values.config.rateLimit.requests | quote }}
+        - name: RATE_LIMIT_WINDOW_SECONDS
+          value: {{ .Values.config.rateLimit.windowSeconds | quote }}
+        - name: DB_POOL_SIZE
+          value: {{ .Values.config.database.poolSize | quote }}
+        - name: DB_MAX_OVERFLOW
+          value: {{ .Values.config.database.maxOverflow | quote }}
+        - name: DB_POOL_TIMEOUT
+          value: {{ .Values.config.database.poolTimeout | quote }}
+        - name: DB_POOL_RECYCLE
+          value: {{ .Values.config.database.poolRecycle | quote }}
+        - name: CACHE_TTL_SECONDS
+          value: {{ .Values.config.cache.ttlSeconds | quote }}
+        - name: ANSIBLE_VERBOSITY
+          value: {{ .Values.config.ansible.verbosity | quote }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 12 }}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 12 }}
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/.cache
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: cache
+        emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: onap-orchestrator
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+- configmap.yaml
+- secret.yaml
+- rbac.yaml
+- ingress.yaml
+- hpa.yaml
+- pdb.yaml
+
+commonLabels:
+  app.kubernetes.io/name: orchestrator
+  app.kubernetes.io/part-of: onap
+  app.kubernetes.io/managed-by: kustomize
+
+images:
+- name: onap-so-modern
+  newTag: latest

@@ -1,0 +1,277 @@
+groups:
+- name: orchestrator_alerts
+  interval: 30s
+  rules:
+  # High Priority Alerts (P1)
+  - alert: OrchestratorAPIDown
+    expr: up{job="orchestrator-api"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      component: api
+      priority: P1
+    annotations:
+      summary: "Orchestrator API is down"
+      description: "The orchestrator API has been down for more than 2 minutes. All deployments are blocked."
+      runbook: "https://docs.example.com/runbooks/orchestrator-api-down"
+
+  - alert: OrchestratorHighErrorRate
+    expr: |
+      (
+        rate(http_requests_total{job="orchestrator-api",status=~"5.."}[5m])
+        /
+        rate(http_requests_total{job="orchestrator-api"}[5m])
+      ) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+      component: api
+      priority: P1
+    annotations:
+      summary: "High error rate detected (>5%)"
+      description: "The orchestrator API is returning {{ $value | humanizePercentage }} errors over the last 5 minutes."
+      runbook: "https://docs.example.com/runbooks/high-error-rate"
+
+  - alert: OrchestratorDatabaseDown
+    expr: |
+      orchestrator_database_health{status="unhealthy"} == 1
+      or
+      up{job="postgres-orchestrator"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      component: database
+      priority: P1
+    annotations:
+      summary: "Database connection lost"
+      description: "The orchestrator cannot connect to the PostgreSQL database."
+      runbook: "https://docs.example.com/runbooks/database-down"
+
+  - alert: OrchestratorDeploymentFailureSpike
+    expr: |
+      rate(deployment_total{status="failed"}[10m]) > 0.1
+    for: 5m
+    labels:
+      severity: critical
+      component: deployments
+      priority: P1
+    annotations:
+      summary: "Deployment failure spike detected"
+      description: "More than 0.1 deployments per second are failing. Current rate: {{ $value | humanize }}/s"
+      runbook: "https://docs.example.com/runbooks/deployment-failures"
+
+  # High Priority Alerts (P2)
+  - alert: OrchestratorHighLatency
+    expr: |
+      histogram_quantile(0.95,
+        rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[5m])
+      ) > 2
+    for: 10m
+    labels:
+      severity: warning
+      component: api
+      priority: P2
+    annotations:
+      summary: "High API latency (P95 > 2s)"
+      description: "95th percentile latency is {{ $value | humanizeDuration }}. Users experiencing slow responses."
+      runbook: "https://docs.example.com/runbooks/high-latency"
+
+  - alert: OrchestratorHighMemoryUsage
+    expr: |
+      (
+        container_memory_working_set_bytes{pod=~"orchestrator-api-.*"}
+        /
+        container_spec_memory_limit_bytes{pod=~"orchestrator-api-.*"}
+      ) > 0.85
+    for: 10m
+    labels:
+      severity: warning
+      component: api
+      priority: P2
+    annotations:
+      summary: "High memory usage (>85%)"
+      description: "Pod {{ $labels.pod }} is using {{ $value | humanizePercentage }} of memory limit."
+      runbook: "https://docs.example.com/runbooks/high-memory"
+
+  - alert: OrchestratorHighCPUUsage
+    expr: |
+      (
+        rate(container_cpu_usage_seconds_total{pod=~"orchestrator-api-.*"}[5m])
+        /
+        container_spec_cpu_quota{pod=~"orchestrator-api-.*"} * 100000
+      ) > 0.85
+    for: 15m
+    labels:
+      severity: warning
+      component: api
+      priority: P2
+    annotations:
+      summary: "High CPU usage (>85%)"
+      description: "Pod {{ $labels.pod }} is using {{ $value | humanizePercentage }} of CPU limit."
+      runbook: "https://docs.example.com/runbooks/high-cpu"
+
+  - alert: OrchestratorPodCrashLooping
+    expr: |
+      rate(kube_pod_container_status_restarts_total{pod=~"orchestrator-api-.*"}[15m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+      component: api
+      priority: P2
+    annotations:
+      summary: "Pod is crash looping"
+      description: "Pod {{ $labels.pod }} has restarted {{ $value | humanize }} times in the last 15 minutes."
+      runbook: "https://docs.example.com/runbooks/crash-loop"
+
+  - alert: OrchestratorDatabaseConnectionPoolExhausted
+    expr: |
+      (
+        orchestrator_db_pool_size
+        -
+        orchestrator_db_pool_available
+      ) / orchestrator_db_pool_size > 0.9
+    for: 5m
+    labels:
+      severity: warning
+      component: database
+      priority: P2
+    annotations:
+      summary: "Database connection pool nearly exhausted (>90%)"
+      description: "{{ $value | humanizePercentage }} of database connections are in use."
+      runbook: "https://docs.example.com/runbooks/db-pool-exhausted"
+
+  # Medium Priority Alerts (P3)
+  - alert: OrchestratorRateLimitExceeded
+    expr: |
+      rate(rate_limit_exceeded_total{job="orchestrator-api"}[5m]) > 1
+    for: 10m
+    labels:
+      severity: info
+      component: api
+      priority: P3
+    annotations:
+      summary: "Rate limit frequently exceeded"
+      description: "Rate limit is being exceeded {{ $value | humanize }} times per second for {{ $labels.client }}."
+      runbook: "https://docs.example.com/runbooks/rate-limit"
+
+  - alert: OrchestratorSlowDeployments
+    expr: |
+      histogram_quantile(0.95,
+        rate(deployment_duration_seconds_bucket[10m])
+      ) > 600
+    for: 15m
+    labels:
+      severity: info
+      component: deployments
+      priority: P3
+    annotations:
+      summary: "Slow deployment times (P95 > 10min)"
+      description: "95th percentile deployment time is {{ $value | humanizeDuration }}."
+      runbook: "https://docs.example.com/runbooks/slow-deployments"
+
+  - alert: OrchestratorCacheMissRateHigh
+    expr: |
+      (
+        rate(cache_miss_total{job="orchestrator-api"}[5m])
+        /
+        rate(cache_requests_total{job="orchestrator-api"}[5m])
+      ) > 0.5
+    for: 30m
+    labels:
+      severity: info
+      component: cache
+      priority: P3
+    annotations:
+      summary: "High cache miss rate (>50%)"
+      description: "Cache miss rate is {{ $value | humanizePercentage }}. Cache may not be effective."
+      runbook: "https://docs.example.com/runbooks/cache-miss"
+
+  - alert: OrchestratorLowReplicas
+    expr: |
+      kube_deployment_status_replicas_available{deployment="orchestrator-api"} < 2
+    for: 5m
+    labels:
+      severity: warning
+      component: api
+      priority: P3
+    annotations:
+      summary: "Low number of available replicas"
+      description: "Only {{ $value }} replicas are available. High availability may be compromised."
+      runbook: "https://docs.example.com/runbooks/low-replicas"
+
+  - alert: OrchestratorPodNotReady
+    expr: |
+      kube_pod_status_ready{pod=~"orchestrator-api-.*",condition="false"} == 1
+    for: 10m
+    labels:
+      severity: warning
+      component: api
+      priority: P3
+    annotations:
+      summary: "Pod not ready"
+      description: "Pod {{ $labels.pod }} has been not ready for 10 minutes."
+      runbook: "https://docs.example.com/runbooks/pod-not-ready"
+
+  # Capacity Planning Alerts
+  - alert: OrchestratorNearingMaxReplicas
+    expr: |
+      (
+        kube_deployment_status_replicas{deployment="orchestrator-api"}
+        /
+        kube_deployment_spec_replicas{deployment="orchestrator-api"}
+      ) > 0.9
+    for: 30m
+    labels:
+      severity: info
+      component: capacity
+      priority: P3
+    annotations:
+      summary: "Nearing maximum replica count"
+      description: "Deployment is at {{ $value | humanizePercentage }} of maximum replicas. Consider increasing max replicas."
+      runbook: "https://docs.example.com/runbooks/capacity-planning"
+
+  - alert: OrchestratorHighDeploymentRate
+    expr: |
+      rate(deployment_total[1h]) > 10
+    for: 2h
+    labels:
+      severity: info
+      component: capacity
+      priority: P3
+    annotations:
+      summary: "High deployment creation rate"
+      description: "Creating {{ $value | humanize }} deployments per second. Monitor for capacity issues."
+      runbook: "https://docs.example.com/runbooks/high-deployment-rate"
+
+  # SLO Alerts
+  - alert: OrchestratorSLOBreach
+    expr: |
+      (
+        sum(rate(http_requests_total{job="orchestrator-api",status!~"5.."}[30d]))
+        /
+        sum(rate(http_requests_total{job="orchestrator-api"}[30d]))
+      ) < 0.995
+    for: 5m
+    labels:
+      severity: critical
+      component: slo
+      priority: P1
+    annotations:
+      summary: "SLO breach: Availability < 99.5%"
+      description: "30-day availability is {{ $value | humanizePercentage }}. SLO is 99.5%."
+      runbook: "https://docs.example.com/runbooks/slo-breach"
+
+  - alert: OrchestratorLatencySLOBreach
+    expr: |
+      histogram_quantile(0.99,
+        rate(http_request_duration_seconds_bucket{job="orchestrator-api"}[30d])
+      ) > 3
+    for: 5m
+    labels:
+      severity: critical
+      component: slo
+      priority: P1
+    annotations:
+      summary: "SLO breach: P99 latency > 3s"
+      description: "30-day P99 latency is {{ $value | humanizeDuration }}. SLO is 3s."
+      runbook: "https://docs.example.com/runbooks/latency-slo-breach"

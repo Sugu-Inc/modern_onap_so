@@ -1,0 +1,185 @@
+# Default values for orchestrator Helm chart
+
+replicaCount: 3
+
+image:
+  repository: onap-so-modern
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8000"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 8000
+  annotations: {}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+  hosts:
+    - host: orchestrator.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: orchestrator-tls
+      hosts:
+        - orchestrator.example.com
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - orchestrator
+          topologyKey: kubernetes.io/hostname
+
+# Application Configuration
+config:
+  # Temporal Configuration
+  temporal:
+    host: "temporal.temporal-system:7233"
+    namespace: "default"
+    taskQueue: "orchestrator-tasks"
+
+  # OpenStack Configuration
+  openstack:
+    authUrl: "http://keystone.openstack:5000/v3"
+    username: "admin"
+    projectName: "admin"
+    projectDomainName: "Default"
+    userDomainName: "Default"
+    regionName: "RegionOne"
+
+  # Database Configuration
+  database:
+    poolSize: 10
+    maxOverflow: 20
+    poolTimeout: 30
+    poolRecycle: 3600
+
+  # Logging Configuration
+  logging:
+    level: "INFO"
+    format: "json"
+
+  # API Configuration
+  api:
+    workers: 4
+    host: "0.0.0.0"
+    port: 8000
+
+  # Rate Limiting
+  rateLimit:
+    enabled: true
+    requests: 100
+    windowSeconds: 60
+
+  # Caching Configuration
+  cache:
+    ttlSeconds: 300
+
+  # Ansible Configuration
+  ansible:
+    verbosity: 0
+
+# Secrets Configuration
+# These should be provided via --set-string or external secrets management
+secrets:
+  # Database connection URL
+  # Format: postgresql+asyncpg://user:password@host:port/database
+  databaseUrl: "postgresql+asyncpg://orchestrator:CHANGE_ME@postgres:5432/orchestrator"
+
+  # API Keys with permissions (comma-separated)
+  # Format: key:permission,key:permission
+  apiKeys: "CHANGE_ME_KEY_1:write,CHANGE_ME_KEY_2:read"
+
+  # Secret key for signing tokens (minimum 32 characters)
+  secretKey: "CHANGE_ME_MINIMUM_32_CHARACTERS_LONG"
+
+  # OpenStack password
+  openstackPassword: "CHANGE_ME"
+
+  # Optional: Redis URL
+  # redisUrl: "redis://redis:6379/0"
+
+  # Optional: Sentry DSN
+  # sentryDsn: ""
+
+# Health Checks
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
