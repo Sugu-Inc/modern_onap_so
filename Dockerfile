@@ -54,7 +54,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY src/ ./src/
-COPY alembic/ ./alembic/
+COPY migrations/ ./migrations/
 COPY alembic.ini ./
 
 # Create required directories
