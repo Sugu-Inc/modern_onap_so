@@ -92,9 +92,6 @@ Thumbs.db
 *.whl
 *.tar.gz
 
-# Alembic
-alembic.ini
-
 # Local config
 .env.local
 .env.*.local
