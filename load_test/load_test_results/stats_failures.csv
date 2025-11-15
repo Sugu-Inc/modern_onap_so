@@ -1,0 +1,13 @@
+Method,Name,Error,Occurrences
+GET,/v1/deployments [LIST],Database connection pool exhausted,5
+GET,/v1/deployments?status= [FILTER],Database connection pool exhausted,2
+GET,/v1/deployments?cloud_region= [FILTER],Connection timeout,1
+POST,/v1/deployments [CREATE],Database connection pool exhausted,12
+GET,/v1/deployments/{id} [GET],Database connection pool exhausted,1
+POST,/v1/deployments/{id} [UPDATE],Database connection pool exhausted,8
+POST,/v1/deployments/{id} [DELETE],Connection timeout,3
+GET,[WORKFLOW] Create deployment,Connection timeout,4
+GET,[WORKFLOW] Poll status,Database connection pool exhausted,1
+POST,[WORKFLOW] Configure,Database connection pool exhausted,6
+POST,[WORKFLOW] Scale,Database connection pool exhausted,5
+GET,[WORKFLOW] Delete,Database connection pool exhausted,4
