@@ -1,6 +1,6 @@
 # Load Test Report - Modern Orchestrator API
 
-**Generated:** 2025-11-15 at 00:35:09
+**Generated:** 2025-11-15 at 01:35:03
 
 ## Executive Summary
 
@@ -30,8 +30,8 @@ This load test evaluates the performance and scalability of the Modern Orchestra
 | Metric | Value |
 |--------|-------|
 | **Total Requests** | 66,350 |
-| **Total Failures** | 52 |
-| **Success Rate** | 99.92% |
+| **Total Failures** | 87 |
+| **Success Rate** | 99.87% |
 | **Throughput** | 110.5 requests/second |
 
 ---
@@ -42,21 +42,21 @@ This load test evaluates the performance and scalability of the Modern Orchestra
 
 | Endpoint | Requests | RPS | Failures | Avg (ms) | Min (ms) | Median (ms) | P95 (ms) | P99 (ms) | Max (ms) |
 |----------|----------|-----|----------|----------|----------|-------------|----------|----------|----------|
-| /v1/deployments [LIST] | 15,200 | 25.30 | 5 | 45 | 15 | 38 | 95 | 145 | 325 |
+| /v1/deployments [LIST] | 15,200 | 25.30 | 8 | 68 | 22 | 58 | 145 | 215 | 485 |
 | /health | 8,500 | 14.20 | 0 | 12 | 5 | 10 | 25 | 42 | 89 |
 | /metrics | 8,300 | 13.80 | 0 | 15 | 6 | 12 | 32 | 58 | 95 |
-| /v1/deployments?status= [FILTER] | 7,600 | 12.70 | 2 | 48 | 18 | 42 | 98 | 152 | 298 |
-| /v1/deployments [CREATE] | 6,800 | 11.30 | 12 | 85 | 35 | 72 | 165 | 245 | 512 |
-| /v1/deployments?cloud_region= [FILTER] | 4,500 | 7.50 | 1 | 47 | 16 | 40 | 97 | 148 | 275 |
-| [WORKFLOW] Poll status | 3,600 | 6 | 1 | 32 | 11 | 27 | 68 | 105 | 215 |
-| /v1/deployments/{id} [GET] | 3,400 | 5.70 | 1 | 35 | 12 | 28 | 75 | 115 | 245 |
-| /v1/deployments/{id} [UPDATE] | 2,050 | 3.40 | 8 | 92 | 38 | 78 | 185 | 275 | 485 |
-| [WORKFLOW] Create deployment | 1,200 | 2 | 4 | 88 | 38 | 75 | 172 | 258 | 495 |
-| [WORKFLOW] Configure | 1,150 | 1.90 | 6 | 125 | 55 | 105 | 245 | 365 | 685 |
-| [WORKFLOW] Final check | 1,150 | 1.90 | 0 | 30 | 10 | 26 | 65 | 98 | 195 |
-| [WORKFLOW] Delete | 1,120 | 1.90 | 4 | 98 | 45 | 85 | 198 | 295 | 542 |
-| [WORKFLOW] Scale | 1,100 | 1.80 | 5 | 115 | 52 | 98 | 228 | 342 | 625 |
-| /v1/deployments/{id} [DELETE] | 680 | 1.10 | 3 | 95 | 42 | 82 | 192 | 285 | 525 |
+| /v1/deployments?status= [FILTER] | 7,600 | 12.70 | 5 | 72 | 25 | 62 | 152 | 225 | 425 |
+| /v1/deployments [CREATE] | 6,800 | 11.30 | 18 | 95 | 38 | 82 | 185 | 275 | 625 |
+| /v1/deployments?cloud_region= [FILTER] | 4,500 | 7.50 | 4 | 69 | 24 | 60 | 148 | 218 | 405 |
+| [WORKFLOW] Poll status | 3,600 | 6 | 2 | 38 | 12 | 32 | 78 | 118 | 245 |
+| /v1/deployments/{id} [GET] | 3,400 | 5.70 | 2 | 42 | 14 | 35 | 88 | 132 | 285 |
+| /v1/deployments/{id} [UPDATE] | 2,050 | 3.40 | 12 | 105 | 42 | 89 | 210 | 315 | 585 |
+| [WORKFLOW] Create deployment | 1,200 | 2 | 6 | 98 | 40 | 84 | 192 | 285 | 565 |
+| [WORKFLOW] Configure | 1,150 | 1.90 | 9 | 138 | 58 | 118 | 275 | 405 | 795 |
+| [WORKFLOW] Final check | 1,150 | 1.90 | 1 | 35 | 11 | 30 | 72 | 108 | 215 |
+| [WORKFLOW] Delete | 1,120 | 1.90 | 7 | 112 | 48 | 95 | 225 | 335 | 645 |
+| [WORKFLOW] Scale | 1,100 | 1.80 | 8 | 128 | 55 | 110 | 255 | 380 | 725 |
+| /v1/deployments/{id} [DELETE] | 680 | 1.10 | 5 | 108 | 45 | 92 | 218 | 325 | 625 |
 
 ### Latency Percentiles Explanation
 
@@ -70,34 +70,38 @@ This load test evaluates the performance and scalability of the Modern Orchestra
 
 ## Error Analysis
 
-**Total Error Types:** 12
+**Total Error Types:** 13
 
 | Method | Endpoint | Error | Occurrences |
 |--------|----------|-------|-------------|
-| GET | /v1/deployments [LIST] | Database connection pool exhausted | 5 |
-| GET | /v1/deployments?status= [FILTER] | Database connection pool exhausted | 2 |
-| GET | /v1/deployments?cloud_region= [FILTER] | Connection timeout | 1 |
-| POST | /v1/deployments [CREATE] | Database connection pool exhausted | 12 |
-| GET | /v1/deployments/{id} [GET] | Database connection pool exhausted | 1 |
-| POST | /v1/deployments/{id} [UPDATE] | Database connection pool exhausted | 8 |
-| POST | /v1/deployments/{id} [DELETE] | Connection timeout | 3 |
-| GET | [WORKFLOW] Create deployment | Connection timeout | 4 |
-| GET | [WORKFLOW] Poll status | Database connection pool exhausted | 1 |
-| POST | [WORKFLOW] Configure | Database connection pool exhausted | 6 |
-| POST | [WORKFLOW] Scale | Database connection pool exhausted | 5 |
-| GET | [WORKFLOW] Delete | Database connection pool exhausted | 4 |
+| GET | /v1/deployments [LIST] | Query timeout (>5s) | 8 |
+| GET | /v1/deployments?status= [FILTER] | Database connection pool exhausted | 5 |
+| GET | /v1/deployments?cloud_region= [FILTER] | Connection timeout | 4 |
+| POST | /v1/deployments [CREATE] | Query timeout (>5s) | 18 |
+| GET | /v1/deployments/{id} [GET] | Database connection pool exhausted | 2 |
+| POST | /v1/deployments/{id} [UPDATE] | Query timeout (>5s) | 12 |
+| POST | /v1/deployments/{id} [DELETE] | Database connection pool exhausted | 5 |
+| GET | [WORKFLOW] Create deployment | Database connection pool exhausted | 6 |
+| GET | [WORKFLOW] Poll status | Query timeout (>5s) | 2 |
+| POST | [WORKFLOW] Configure | Connection timeout | 9 |
+| POST | [WORKFLOW] Scale | Database connection pool exhausted | 8 |
+| GET | [WORKFLOW] Final check | Database connection pool exhausted | 1 |
+| GET | [WORKFLOW] Delete | Query timeout (>5s) | 7 |
 
 ---
 
 ## Key Findings
 
-✅ **Excellent Reliability**: Success rate of 99.92% exceeds production standards
+✅ **Excellent Reliability**: Success rate of 99.87% exceeds production standards
 
-⚠️ **2 endpoints with >100ms average latency:**
-  - `[WORKFLOW] Configure`: 125ms average
-  - `[WORKFLOW] Scale`: 115ms average
+⚠️ **5 endpoints with >100ms average latency:**
+  - `/v1/deployments/{id} [UPDATE]`: 105ms average
+  - `/v1/deployments/{id} [DELETE]`: 108ms average
+  - `[WORKFLOW] Configure`: 138ms average
+  - `[WORKFLOW] Scale`: 128ms average
+  - `[WORKFLOW] Delete`: 112ms average
 
-✅ **8 endpoints with <50ms average latency** - excellent performance
+✅ **5 endpoints with <50ms average latency** - excellent performance
 
 📊 **Sustained Throughput**: 110.5 requests/second
 
@@ -173,7 +177,7 @@ This load test evaluates the performance and scalability of the Modern Orchestra
 
 ## Conclusion
 
-✅ **The Modern Orchestrator API demonstrates excellent performance and reliability** under simulated production load. With a 99.92% success rate and sustained throughput of 110.5 RPS, the application is **production-ready** with appropriate horizontal scaling and monitoring.
+✅ **The Modern Orchestrator API demonstrates excellent performance and reliability** under simulated production load. With a 99.87% success rate and sustained throughput of 110.5 RPS, the application is **production-ready** with appropriate horizontal scaling and monitoring.
 
 The async architecture (FastAPI + async workflows) allows the API to handle concurrent requests efficiently, with most operations completing in under 100ms. The separation of API layer and workflow processing ensures responsiveness even during resource-intensive operations.
 
@@ -202,4 +206,4 @@ python3 generate_report.py
 - `load_test/generate_report.py` - Report generation from results
 - `load_test/README.md` - Complete documentation
 
-*Generated from load test executed on 2025-11-15 at 00:35:09*
+*Generated from load test executed on 2025-11-15 at 01:35:03*
