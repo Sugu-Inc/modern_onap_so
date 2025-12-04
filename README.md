@@ -80,12 +80,6 @@ onap_so_modern/
 └── pyproject.toml              # Poetry dependencies
 ```
 
-## Case Study
-
-This project is part of a larger study on legacy system modernization:
-- **Case Study**: [migration-case-studies](../migration-case-studies)
-- **Blog Post**: [Modernizing Telecom Orchestration](../migration-case-studies/blog_post.md)
-
 ## Attribution
 
 This is an independent reimplementation inspired by [ONAP Service Orchestrator](https://github.com/onap/so), an open-source project by the Linux Foundation's ONAP community. This project is not affiliated with or endorsed by ONAP.
